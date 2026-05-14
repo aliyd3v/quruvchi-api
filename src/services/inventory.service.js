@@ -1,8 +1,8 @@
-const { InventoryHistoryType, Unit } = require("@prisma/client");
+const { InventoryHistoryType, Unit } = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { uploadFilesToS3, deleteFilesFromS3 } = require("../utils/s3");
 const ExcelJS = require("exceljs");
-const prisma = require("./prisma");
+const prisma = require("../lib/prisma");
 const { idChecker } = require("../utils/idChecker");
 const sleep = require("../utils/sleep");
 const { fromMinorUnits } = require("../utils/amount");

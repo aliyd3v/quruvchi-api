@@ -1,7 +1,7 @@
 const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
-const { InventoryHistoryType } = require("@prisma/client");
+const { InventoryHistoryType } = require("../../../generated/prisma");
 const fileService = require("../../../services/file.service");
 
 const filesDto = z.array(

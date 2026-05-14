@@ -1,11 +1,11 @@
-const { SalaryStatus, TransactionType, SalaryMonthType, PaymentMethod } = require("@prisma/client");
+const { SalaryStatus, TransactionType, SalaryMonthType, PaymentMethod } = require("../lib/prisma");
 const ExcelJS = require("exceljs");
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const { toMinor, fromMinorUnits } = require("../utils/amount");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { formatZodError } = require("../utils/formatZodError");
 const balanceService = require("../services/balance.service");
 const sleep = require("../utils/sleep");
@@ -155,7 +155,7 @@ async function writeSalaryToMonth({ salaryMonthId, objectId, amount, ownerId, ty
               isSalary: true,
               purpose: "",
               notes: description,
-              isReviewed: role === Roles.SUPERADMIN,
+              isReviewed: role === Role.SUPERADMIN,
             },
             select: { id: true },
           });
@@ -1099,8 +1099,8 @@ const salaryController = {
       };
 
       const formatNumber = (num) => {
-        if (!num || isNaN(Number(num))) return /* "0.00" */0;
-        return Number(num)/* .toLocaleString("uz-UZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) */;
+        if (!num || isNaN(Number(num))) return /* "0.00" */ 0;
+        return Number(num) /* .toLocaleString("uz-UZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) */;
       };
 
       const formatAmount = (amount) => {
@@ -1330,7 +1330,7 @@ const salaryController = {
       page = !Number.isNaN(Number(page)) && Number(page) > 0 ? Number(page) : 1;
       limit = !Number.isNaN(Number(limit)) && Number(limit) > 0 ? Number(limit) : 30;
       sort = allowedColumnKeys.includes(sort) ? sort : "fname";
-      role = [Roles.ACCOUNTANT, Roles.ADMIN, Roles.PTO, Roles.WORKER].includes(role) ? role : null;
+      role = [Role.ACCOUNTANT, Role.ADMIN, Role.PTO, Role.WORKER].includes(role) ? role : null;
 
       const findWhere = {
         isActive: true,
@@ -1342,7 +1342,7 @@ const salaryController = {
             { phone: { contains: key, mode: "insensitive" } },
           ],
         }),
-        ...(role ? { role } : { role: { notIn: [Roles.SUPERADMIN] } }),
+        ...(role ? { role } : { role: { notIn: [Role.SUPERADMIN] } }),
       };
 
       const count = await prisma.user.count({ where: findWhere });
@@ -1469,7 +1469,7 @@ const salaryController = {
 
       const findWhere = {
         isActive: true,
-        role: Roles.WORKER,
+        role: Role.WORKER,
         ...(key && {
           OR: [
             { fname: { contains: key, mode: "insensitive" } },
@@ -1766,7 +1766,7 @@ const salaryController = {
       sort = allowedColumnKeys.includes(sort) ? sort : "fname";
 
       const findWhere = {
-        role: { not: Roles.SUPERADMIN },
+        role: { not: Role.SUPERADMIN },
         isActive: true,
         ...(key && {
           OR: [
@@ -1897,7 +1897,7 @@ const salaryController = {
 
       const users = await prisma.user.findMany({
         orderBy: { [sort]: reverse ? "desc" : "asc" },
-        where: { role: { not: Roles.SUPERADMIN }, isActive: true },
+        where: { role: { not: Role.SUPERADMIN }, isActive: true },
         select: {
           id: true,
           fname: true,
@@ -1933,13 +1933,13 @@ const salaryController = {
 
       // ==================== YORDAMCHI FUNKSIYALAR ====================
       const getRoleUz = (role) => {
-        const roles = {
-          [Roles.ADMIN]: "Админ",
-          [Roles.ACCOUNTANT]: "Ҳисобчи",
-          [Roles.PTO]: "ПТО",
-          [Roles.WORKER]: "Ишчи",
+        const Role = {
+          [Role.ADMIN]: "Админ",
+          [Role.ACCOUNTANT]: "Ҳисобчи",
+          [Role.PTO]: "ПТО",
+          [Role.WORKER]: "Ишчи",
         };
-        return roles[role] || role || "-";
+        return Role[role] || role || "-";
       };
 
       const getSalaryStatusStyle = (status) => {

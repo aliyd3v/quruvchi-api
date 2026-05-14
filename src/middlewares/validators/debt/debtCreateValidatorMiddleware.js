@@ -1,7 +1,7 @@
 const { z, bigint } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
-const { DebtType, CounterPartyType, Unit } = require("@prisma/client");
+const { DebtType, CounterPartyType, Unit } = require("../../../generated/prisma");
 
 const debtCreateDto = z
   .object(

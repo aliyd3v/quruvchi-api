@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE "public"."User" ADD COLUMN     "balance" BIGINT NOT NULL DEFAULT 0,
-ADD COLUMN     "total_expense" BIGINT NOT NULL DEFAULT 0,
-ADD COLUMN     "total_income" BIGINT NOT NULL DEFAULT 0,
-ADD COLUMN     "version" INTEGER NOT NULL DEFAULT 0;

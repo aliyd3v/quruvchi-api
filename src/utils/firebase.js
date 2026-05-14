@@ -1,7 +1,7 @@
 const firebase = require("firebase-admin");
 const { getStorage } = require("firebase-admin/storage");
 const Config = require("../config");
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 
 async function cleanupLocalFiles(files) {
   if (!files) return;

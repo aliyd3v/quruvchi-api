@@ -1,6 +1,6 @@
 const transactionController = require("../controllers/transaction.controller");
 const upload = require("../utils/multer");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
 const { transactionCreateValidatorMiddleware } = require("../middlewares/validators/transaction/transactionCreateValidatorMiddleware");
@@ -23,9 +23,9 @@ transactionRouter
   .get("/", checkPermissionMiddleware(Permissions.txn_crud), transactionController.getAll)
   .get("/get-excel-doc", checkPermissionMiddleware(Permissions.txn_crud), transactionController.getExcelDoc)
   .get("/get-excel-doc/:id", checkPermissionMiddleware(Permissions.txn_crud), transactionController.getTransactionItemsXLSX)
-  .get("/trash", checkRoleMiddleware(Roles.SUPERADMIN), transactionController.getDeleted)
-  .patch("/trash/:id", checkRoleMiddleware(Roles.SUPERADMIN), transactionController.restoreOne)
-  .delete("/trash/:id", checkRoleMiddleware(Roles.SUPERADMIN), transactionController.absoluteDelete)
+  .get("/trash", checkRoleMiddleware(Role.SUPERADMIN), transactionController.getDeleted)
+  .patch("/trash/:id", checkRoleMiddleware(Role.SUPERADMIN), transactionController.restoreOne)
+  .delete("/trash/:id", checkRoleMiddleware(Role.SUPERADMIN), transactionController.absoluteDelete)
   .get("/user-transactions", transactionController.getUserTransactions)
   .get("/user-transactions/get-excel-doc", transactionController.getUserTransactionsExcelDoc)
   .get("/user-transactions/:id", transactionController.getUserTransactionItems)
@@ -33,7 +33,7 @@ transactionRouter
   .put("/item/:id", checkPermissionMiddleware(Permissions.txn_crud), transactionItemUpdateValidatorMiddleware, transactionController.updateTxnItem)
   .post("/:id", checkPermissionMiddleware(Permissions.txn_crud), transactionItemCreateValidatorMiddleware, transactionController.addItem)
   .get("/:id", checkPermissionMiddleware(Permissions.txn_crud), transactionController.getTransactionItems)
-  .patch("/:id/toggle-reviewed", checkRoleMiddleware(Roles.SUPERADMIN), transactionController.toggleReviewed)
+  .patch("/:id/toggle-reviewed", checkRoleMiddleware(Role.SUPERADMIN), transactionController.toggleReviewed)
   .put("/:id", checkPermissionMiddleware(Permissions.txn_crud), transactionUpdateValidatorMiddleware, transactionController.updateOne)
   .delete("/:id", checkPermissionMiddleware(Permissions.txn_crud), transactionController.deleteOne);
 

@@ -1,5 +1,5 @@
-const prisma = require("./prisma");
-const { DebtStatus, DebtAuditAction, CounterPartyType, DebtTransactionType, Unit } = require("@prisma/client");
+const prisma = require("../lib/prisma");
+const { DebtStatus, DebtAuditAction, CounterPartyType, DebtTransactionType, Unit } = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const ExcelJS = require("exceljs");
 const { fromMinorUnits } = require("../utils/amount");

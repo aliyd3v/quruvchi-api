@@ -1,4 +1,4 @@
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const transferService = require("../services/transfer.service");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");

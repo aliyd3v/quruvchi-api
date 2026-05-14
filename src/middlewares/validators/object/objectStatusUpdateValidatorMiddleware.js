@@ -1,7 +1,7 @@
 const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
-const { ObjectStatus } = require("@prisma/client");
+const { ObjectStatus } = require("../../../generated/prisma");
 
 const objectStatusChangeCreateDto = z
   .object({ status: z.enum([ObjectStatus.ACTIVE, ObjectStatus.COMPLETED, ObjectStatus.PAUSED], { message: "object_status_in_active_complated_paused" }) }, { message: "body_is_required" })

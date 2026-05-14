@@ -1,6 +1,6 @@
 const lotController = require("../controllers/lot.controller");
 const upload = require("../utils/multer");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
 const { lotCreateValidationMiddleware } = require("../middlewares/validators/lot/lotCreateValidationMiddleware");
@@ -20,12 +20,12 @@ lotRouter
   .use(checkPermissionMiddleware(Permissions.lot_crud))
   .post(
     "/",
-    checkRoleMiddleware(Roles.SUPERADMIN, Roles.ACCOUNTANT),
+    checkRoleMiddleware(Role.SUPERADMIN, Role.ACCOUNTANT),
     upload.array("files"),
     lotCreateValidationMiddleware,
     lotController.createOne,
     uploadMultipleFiles,
-    lotController.uploadLotAttachment
+    lotController.uploadLotAttachment,
   )
   .get("/", lotController.getAll)
   .get("/get-excel-doc", lotController.getExcelDoc)
@@ -36,18 +36,18 @@ lotRouter
   .get("/:id", lotController.getOne)
   .post(
     "/:id",
-    checkRoleMiddleware(Roles.SUPERADMIN, Roles.PTO, Roles.ACCOUNTANT),
+    checkRoleMiddleware(Role.SUPERADMIN, Role.PTO, Role.ACCOUNTANT),
     upload.array("files"),
     lotTaskCreateValidatorMiddleware,
     lotController.createLotTask,
     uploadMultipleFiles,
-    lotController.uploadLotTaskAttachment
+    lotController.uploadLotTaskAttachment,
   )
-  .patch("/task/:id", checkRoleMiddleware(Roles.SUPERADMIN, Roles.PTO, Roles.ACCOUNTANT), lotController.changeLotTaskStatusToInProgress)
+  .patch("/task/:id", checkRoleMiddleware(Role.SUPERADMIN, Role.PTO, Role.ACCOUNTANT), lotController.changeLotTaskStatusToInProgress)
   .post("/task/:id", upload.array("files"), lotTaskCompleteValidatorMiddleware, lotController.writeLotTaskCompleted, uploadMultipleFiles, lotController.uploadLotTaskCompletedAttachment)
-  .put("/task/:id", checkRoleMiddleware(Roles.SUPERADMIN), lotTaskUpdateValidatorMiddleware, lotController.updateOneLotTask)
-  .patch("/task/:id/check", checkRoleMiddleware(Roles.SUPERADMIN), lotController.checkLotTask)
-  .put("/:id", checkRoleMiddleware(Roles.SUPERADMIN, Roles.ACCOUNTANT), lotUpdateValidatorMiddleware, lotController.updateOne)
-  .delete("/:id", checkRoleMiddleware(Roles.SUPERADMIN), lotController.deleteOne);
+  .put("/task/:id", checkRoleMiddleware(Role.SUPERADMIN), lotTaskUpdateValidatorMiddleware, lotController.updateOneLotTask)
+  .patch("/task/:id/check", checkRoleMiddleware(Role.SUPERADMIN), lotController.checkLotTask)
+  .put("/:id", checkRoleMiddleware(Role.SUPERADMIN, Role.ACCOUNTANT), lotUpdateValidatorMiddleware, lotController.updateOne)
+  .delete("/:id", checkRoleMiddleware(Role.SUPERADMIN), lotController.deleteOne);
 
 module.exports = { lotRouter };

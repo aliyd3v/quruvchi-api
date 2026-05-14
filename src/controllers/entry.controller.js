@@ -1,5 +1,5 @@
-const { InvoiceStatus, EntryType, EntryColor } = require("@prisma/client");
-const prisma = require("../services/prisma");
+const { InvoiceStatus, EntryType, EntryColor } = require("../lib/prisma");
+const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { localErrorHandler } = require("../utils/localErrorHandler");
 const { idChecker } = require("../utils/idChecker");

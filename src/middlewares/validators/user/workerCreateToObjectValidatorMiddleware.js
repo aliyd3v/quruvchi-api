@@ -1,8 +1,6 @@
 const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
-const { Roles } = require("../../../enums/RoleEnum");
-const Permissions = require("../../../enums/PermissionEnum");
 
 const workerCreateToObjectDto = z
   .object(

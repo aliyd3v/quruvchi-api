@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Config = require("../config");
 const translations = require("../constants");
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { comparePassword, hashPassword } = require("../utils/bcrypt");
 const { localErrorHandler } = require("../utils/localErrorHandler");

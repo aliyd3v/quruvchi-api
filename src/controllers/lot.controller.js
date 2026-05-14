@@ -1,10 +1,10 @@
 const ExcelJS = require("exceljs");
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const { fromMinorUnits } = require("../utils/amount");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
-const { LotStatus } = require("@prisma/client");
+const { LotStatus } = require("../lib/prisma");
 const fileService = require("../services/file.service");
 const { deleteFilesFromS3 } = require("../utils/s3");
 

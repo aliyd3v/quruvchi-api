@@ -1,7 +1,7 @@
-const { Unit } = require("@prisma/client");
+const { Unit } = require("../generated/prisma");
 const AppError = require("../utils/AppError");
 const { deleteFilesFromS3, uploadFileToS3, deleteFileFromS3 } = require("../utils/s3");
-const prisma = require("./prisma");
+const prisma = require("../lib/prisma");
 const fileService = require("./file.service");
 
 class catalogService {

@@ -1,4 +1,4 @@
-const { TaskStatus } = require("@prisma/client");
+const { TaskStatus } = require("../lib/prisma");
 
 module.exports = {
   TaskStatus,

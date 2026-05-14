@@ -1,4 +1,4 @@
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { localErrorHandler } = require("../utils/localErrorHandler");
 const { deleteFileFromS3, cleanupLocalFiles } = require("../utils/s3");

@@ -1,7 +1,7 @@
 const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
-const { PaymentType, PaymentMethod } = require("@prisma/client");
+const { PaymentType, PaymentMethod } = require("../../../generated/prisma");
 
 const dto = z
   .object(

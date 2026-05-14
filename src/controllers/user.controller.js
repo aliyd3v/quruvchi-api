@@ -1,13 +1,12 @@
-const { Roles } = require("../enums/RoleEnum");
 const ExcelJS = require("exceljs");
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { hashPassword } = require("../utils/bcrypt");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
 const SMS = require("../utils/sms");
 const { fromMinorUnits } = require("../utils/amount");
-const { TransactionType } = require("@prisma/client");
+const { TransactionType, Role } = require("../generated/prisma");
 const { deleteFileFromS3 } = require("../utils/s3");
 
 const allowedColumnKeys = ["fname", "lname", "phone", "email", "role", "lastSeans", "createdAt", "deletedAt"];
@@ -66,7 +65,7 @@ const userController = {
       limit = !Number.isNaN(Number(limit)) && Number(limit) > 0 && Number.isInteger(Number(limit)) ? Number(limit) : 30;
       reverse = reverse === "true";
       sort = allowedColumnKeys.includes(sort) ? sort : "fname";
-      role = [Roles.ACCOUNTANT, Roles.ADMIN, Roles.PTO, Roles.WORKER].includes(role) ? role : null;
+      role = [Role.ACCOUNTANT, Role.ADMIN, Role.PTO, Role.WORKER].includes(role) ? role : null;
 
       const findWhere = {
         isActive: true,
@@ -187,7 +186,7 @@ const userController = {
 
       reverse = reverse === "true";
       sort = allowedColumnKeys.includes(sort) ? sort : "fname";
-      role = typeof role === "string" && [Roles.ACCOUNTANT, Roles.ADMIN, Roles.PTO, Roles.WORKER].includes(role.trim()) ? role.trim() : null;
+      role = typeof role === "string" && [Role.ACCOUNTANT, Role.ADMIN, Role.PTO, Role.WORKER].includes(role.trim()) ? role.trim() : null;
 
       const users = await prisma.user.findMany({
         orderBy: { [sort]: reverse ? "desc" : "asc" },
@@ -216,21 +215,21 @@ const userController = {
 
       // ==================== YORDAMCHI FUNKSIYALAR ====================
       const getRoleUz = (role) => {
-        const roles = {
-          [Roles.ADMIN]: "Admin",
-          [Roles.ACCOUNTANT]: "Hisobchi",
-          [Roles.WORKER]: "Ishchi",
-          [Roles.PTO]: "PTO",
+        const Role = {
+          [Role.ADMIN]: "Admin",
+          [Role.ACCOUNTANT]: "Hisobchi",
+          [Role.WORKER]: "Ishchi",
+          [Role.PTO]: "PTO",
         };
-        return roles[role] || role || "-";
+        return Role[role] || role || "-";
       };
 
-      const getRoleStyle = (role) => {
+      const getRoletyle = (role) => {
         const styles = {
-          [Roles.ADMIN]: { bgColor: "FFFFE0B2", fontColor: "FFE65100" },
-          [Roles.ACCOUNTANT]: { bgColor: "FFE3F2FD", fontColor: "FF1976D2" },
-          [Roles.WORKER]: { bgColor: "FFE8F5E9", fontColor: "FF2E7D32" },
-          [Roles.PTO]: { bgColor: "FFF3E5F5", fontColor: "FF7B1FA2" },
+          [Role.ADMIN]: { bgColor: "FFFFE0B2", fontColor: "FFE65100" },
+          [Role.ACCOUNTANT]: { bgColor: "FFE3F2FD", fontColor: "FF1976D2" },
+          [Role.WORKER]: { bgColor: "FFE8F5E9", fontColor: "FF2E7D32" },
+          [Role.PTO]: { bgColor: "FFF3E5F5", fontColor: "FF7B1FA2" },
         };
         return styles[role] || { bgColor: "FFFFFFFF", fontColor: "FF000000" };
       };
@@ -291,7 +290,7 @@ const userController = {
 
       // ==================== MA'LUMOTLARNI QO'SHISH ====================
       rowsData.forEach((data) => {
-        const roleStyle = getRoleStyle(data._role);
+        const Roletyle = getRoletyle(data._role);
         const { _role, ...cleanData } = data;
 
         const row = sheet.addRow(cleanData);
@@ -318,13 +317,13 @@ const userController = {
         row.getCell(3).fill = {
           type: "pattern",
           pattern: "solid",
-          fgColor: { argb: roleStyle.bgColor },
+          fgColor: { argb: Roletyle.bgColor },
         };
         row.getCell(3).font = {
           size: FONT_SIZE,
           name: FONT_NAME,
           bold: true,
-          color: { argb: roleStyle.fontColor },
+          color: { argb: Roletyle.fontColor },
         };
 
         row.getCell(4).alignment = { horizontal: "center", vertical: "middle" }; // Telefon
@@ -364,10 +363,10 @@ const userController = {
 
       // Role bo'yicha hisoblash
       const roleCounts = {
-        [Roles.ADMIN]: 0,
-        [Roles.ACCOUNTANT]: 0,
-        [Roles.WORKER]: 0,
-        [Roles.PTO]: 0,
+        [Role.ADMIN]: 0,
+        [Role.ACCOUNTANT]: 0,
+        [Role.WORKER]: 0,
+        [Role.PTO]: 0,
       };
       users.forEach((u) => {
         if (roleCounts[u.role] !== undefined) roleCounts[u.role]++;
@@ -375,8 +374,8 @@ const userController = {
 
       const summaryRow = sheet.getRow(summaryRowNumber);
       sheet.mergeCells(`A${summaryRowNumber}:E${summaryRowNumber}`);
-      summaryRow.getCell(1).value = `Jami: ${users.length} ta | Admin: ${roleCounts[Roles.ADMIN]} | Hisobchi: ${roleCounts[Roles.ACCOUNTANT]} | Ishchi: ${roleCounts[Roles.WORKER]} | PTO: ${
-        roleCounts[Roles.PTO]
+      summaryRow.getCell(1).value = `Jami: ${users.length} ta | Admin: ${roleCounts[Role.ADMIN]} | Hisobchi: ${roleCounts[Role.ACCOUNTANT]} | Ishchi: ${roleCounts[Role.WORKER]} | PTO: ${
+        roleCounts[Role.PTO]
       }`;
       summaryRow.getCell(1).font = { bold: true, size: 11, name: FONT_NAME };
       summaryRow.getCell(1).alignment = {
@@ -1018,7 +1017,7 @@ const userController = {
       const count = await prisma.user.count({
         where: {
           isActive: true,
-          role: Roles.WORKER,
+          role: Role.WORKER,
         },
       });
 
@@ -1037,7 +1036,7 @@ const userController = {
       // Get from database.
       const users = await prisma.user.findMany({
         where: {
-          role: Roles.WORKER,
+          role: Role.WORKER,
           isActive: true,
         },
         select: {
@@ -1138,7 +1137,7 @@ const userController = {
           phone: req.body.phone,
           password: passwordHash,
           email: req.body.email,
-          role: Roles.WORKER,
+          role: Role.WORKER,
           createdById: req.user.id,
         },
         select: { id: true },
@@ -1349,21 +1348,21 @@ const userController = {
 
       // ==================== YORDAMCHI FUNKSIYALAR ====================
       const getRoleUz = (role) => {
-        const roles = {
-          [Roles.ADMIN]: "Admin",
-          [Roles.ACCOUNTANT]: "Hisobchi",
-          [Roles.WORKER]: "Ishchi",
-          [Roles.PTO]: "PTO",
+        const Role = {
+          [Role.ADMIN]: "Admin",
+          [Role.ACCOUNTANT]: "Hisobchi",
+          [Role.WORKER]: "Ishchi",
+          [Role.PTO]: "PTO",
         };
-        return roles[role] || role || "-";
+        return Role[role] || role || "-";
       };
 
-      const getRoleStyle = (role) => {
+      const getRoletyle = (role) => {
         const styles = {
-          [Roles.ADMIN]: { bgColor: "FFFFE0B2", fontColor: "FFE65100" },
-          [Roles.ACCOUNTANT]: { bgColor: "FFE3F2FD", fontColor: "FF1976D2" },
-          [Roles.WORKER]: { bgColor: "FFE8F5E9", fontColor: "FF2E7D32" },
-          [Roles.PTO]: { bgColor: "FFF3E5F5", fontColor: "FF7B1FA2" },
+          [Role.ADMIN]: { bgColor: "FFFFE0B2", fontColor: "FFE65100" },
+          [Role.ACCOUNTANT]: { bgColor: "FFE3F2FD", fontColor: "FF1976D2" },
+          [Role.WORKER]: { bgColor: "FFE8F5E9", fontColor: "FF2E7D32" },
+          [Role.PTO]: { bgColor: "FFF3E5F5", fontColor: "FF7B1FA2" },
         };
         return styles[role] || { bgColor: "FFFFFFFF", fontColor: "FF000000" };
       };
@@ -1432,7 +1431,7 @@ const userController = {
 
       // ==================== MA'LUMOTLARNI QO'SHISH ====================
       rowsData.forEach((data) => {
-        const roleStyle = getRoleStyle(data._role);
+        const Roletyle = getRoletyle(data._role);
         const { _role, _balance, ...cleanData } = data;
 
         const row = sheet.addRow(cleanData);
@@ -1459,13 +1458,13 @@ const userController = {
         row.getCell(3).fill = {
           type: "pattern",
           pattern: "solid",
-          fgColor: { argb: roleStyle.bgColor },
+          fgColor: { argb: Roletyle.bgColor },
         };
         row.getCell(3).font = {
           size: FONT_SIZE,
           name: FONT_NAME,
           bold: true,
-          color: { argb: roleStyle.fontColor },
+          color: { argb: Roletyle.fontColor },
         };
 
         // Jami berilgan - yashil

@@ -1,5 +1,4 @@
 const debtController = require("../controllers/debt.controller");
-const { Roles } = require("../enums/RoleEnum");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
 const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");

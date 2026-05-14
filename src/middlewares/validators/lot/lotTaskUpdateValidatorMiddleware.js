@@ -1,7 +1,7 @@
 const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
-const { LotTaskStatus } = require("@prisma/client");
+const { LotTaskStatus } = require("../../../generated/prisma");
 
 const dto = z
   .object(

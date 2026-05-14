@@ -1,4 +1,4 @@
-const { ObjectStatus } = require("@prisma/client");
+const { ObjectStatus } = require("../lib/prisma");
 
 module.exports = {
   ObjectStatus,

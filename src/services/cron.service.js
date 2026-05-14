@@ -1,4 +1,4 @@
-const prisma = require("./prisma");
+const prisma = require("../lib/prisma");
 const { backupDatabase } = require("../utils/dbBackup");
 const { sendFileToTg } = require("../utils/sendFileToTg");
 const SMS = require("../utils/sms");

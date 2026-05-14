@@ -1,10 +1,9 @@
-const { TaskStatus, Unit, TaskPriority } = require("@prisma/client");
-const prisma = require("../services/prisma");
+const { TaskStatus, Unit, TaskPriority, Role } = require("../generated/prisma");
+const prisma = require("../lib/prisma");
 const ExcelJS = require("exceljs");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
-const { Roles } = require("../enums/RoleEnum");
 const fileService = require("../services/file.service");
 const sleep = require("../utils/sleep");
 const { fromMinorUnits } = require("../utils/amount");
@@ -164,7 +163,7 @@ async function deleteOneTaskHistoryOptimistic({ id, createdById, role, maxRetrie
 
         const task = taskHistory.task;
 
-        if (taskHistory.createdById !== createdById && role !== Roles.SUPERADMIN) {
+        if (taskHistory.createdById !== createdById && role !== Role.SUPERADMIN) {
           throw new AppError(400, "no_access");
         }
 
@@ -2599,7 +2598,7 @@ const taskController = {
         },
       });
       if (!subTask) throw new AppError(404, "task_not_found");
-      if (!subTask.assigned.some((a) => a.userId === req.user.id) && req.user.role !== Roles.SUPERADMIN) {
+      if (!subTask.assigned.some((a) => a.userId === req.user.id) && req.user.role !== Role.SUPERADMIN) {
         throw new AppError(400, "that_can_only_assigned");
       }
 
@@ -2767,7 +2766,7 @@ const taskController = {
       if (!task) throw new AppError(404, "task_not_found");
 
       const isExists = task.assigned.some((a) => a.userId === req.user.id);
-      if (!isExists && req.user.role !== Roles.SUPERADMIN) {
+      if (!isExists && req.user.role !== Role.SUPERADMIN) {
         throw new AppError(400, "write_comment_can_only_assigned_users");
       }
 
@@ -3014,7 +3013,7 @@ const taskController = {
       });
       if (!comment) throw new AppError(404, "comment_not_found");
 
-      if (comment.createdById !== req.user.id && req.user.role !== Roles.SUPERADMIN) {
+      if (comment.createdById !== req.user.id && req.user.role !== Role.SUPERADMIN) {
         throw new AppError(400, "delete_can_only_owner");
       }
 
@@ -5197,7 +5196,7 @@ const taskController = {
       });
       if (!subtask) throw new AppError(404, "task_not_found");
 
-      if (!subtask.assigned.some((a) => a.userId === req.user.id) && req.user.role !== Roles.SUPERADMIN) {
+      if (!subtask.assigned.some((a) => a.userId === req.user.id) && req.user.role !== Role.SUPERADMIN) {
         throw new AppError(400, "no_access");
       }
 
@@ -5237,7 +5236,7 @@ const taskController = {
 
         if (!taskHistory) throw new AppError(404, "task_history_not_found");
 
-        if (taskHistory.createdById !== req.user.id && req.user.role !== Roles.SUPERADMIN) {
+        if (taskHistory.createdById !== req.user.id && req.user.role !== Role.SUPERADMIN) {
           throw new AppError(400, "no_access");
         }
 

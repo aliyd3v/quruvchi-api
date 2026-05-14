@@ -1,6 +1,6 @@
-const { InvoiceStatus, EntryType, EntryColor } = require("@prisma/client");
+const { InvoiceStatus, EntryType, EntryColor } = require("../lib/prisma");
 const ExcelJS = require("exceljs");
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");

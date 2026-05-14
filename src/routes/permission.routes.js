@@ -1,5 +1,5 @@
 const permissionController = require("../controllers/permission.controller");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
 

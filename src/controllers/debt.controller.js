@@ -1,5 +1,5 @@
-const { CounterPartyType } = require("@prisma/client");
-const prisma = require("../services/prisma");
+const { CounterPartyType } = require("../lib/prisma");
+const prisma = require("../lib/prisma");
 const debtService = require("../services/debt.service");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");

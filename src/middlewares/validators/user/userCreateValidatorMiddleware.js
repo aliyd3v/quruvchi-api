@@ -1,7 +1,7 @@
 const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
-const { Roles } = require("../../../enums/RoleEnum");
+const { Role } = require("../../../generated/prisma");
 const Permissions = require("../../../enums/PermissionEnum");
 
 const dto = z
@@ -16,7 +16,7 @@ const dto = z
       password: z.string({ message: "password_is_required" }).trim().min(6, { message: "password_min_length_is_6" }).max(32, { message: "password_max_length_is_32" }),
       password_repeat: z.string({ message: "password_repeat_is_required" }).trim().min(6, { message: "password_min_length_is_6" }).max(32, { message: "password_max_length_is_32" }),
       email: z.string({ message: "email_is_required" }).trim().email({ message: "email_format_is_wrong" }),
-      role: z.enum([Roles.ACCOUNTANT, Roles.ADMIN, Roles.WORKER, Roles.PTO], { message: "role_in_accountant_admin_worker" }),
+      role: z.enum([Role.ACCOUNTANT, Role.ADMIN, Role.WORKER, Role.PTO], { message: "role_in_accountant_admin_worker" }),
       permissions: z
         .array(z.nativeEnum(Permissions))
         .default([])

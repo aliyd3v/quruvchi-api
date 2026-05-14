@@ -1,5 +1,5 @@
 const attachmentController = require("../controllers/attachment.controller");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
 const { uploadMultipleFiles } = require("../middlewares/uploadToStorageMiddleware");
@@ -12,6 +12,6 @@ attachmentRouter
   .use(checkTokenMiddleware)
   .post("/", upload.array("files"), attachmentCreateValidatorMiddleware, attachmentController.checkConnectionModelMiddleware, uploadMultipleFiles, attachmentController.createOne)
   .delete("/:id", attachmentController.deleteOne)
-  .delete("/:id/absolute", checkRoleMiddleware(Roles.SUPERADMIN), attachmentController.absoluteDeleteOne);
+  .delete("/:id/absolute", checkRoleMiddleware(Role.SUPERADMIN), attachmentController.absoluteDeleteOne);
 
 module.exports = { attachmentRouter };

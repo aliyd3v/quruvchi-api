@@ -1,7 +1,6 @@
-const { TransactionType, Unit } = require("@prisma/client");
+const { TransactionType, Unit, Role } = require("../generated/prisma");
 const ExcelJS = require("exceljs");
-const { Roles } = require("../enums/RoleEnum");
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
@@ -1933,7 +1932,7 @@ const transactionController = {
       });
       if (!txn) throw new AppError(404, "transaction_not_found");
 
-      if (req.user.id !== txn.createdById && req.user.role !== Roles.SUPERADMIN) throw new AppError(400, "no_access");
+      if (req.user.id !== txn.createdById && req.user.role !== Role.SUPERADMIN) throw new AppError(400, "no_access");
 
       const result = {
         id: txn.id,
@@ -1991,7 +1990,7 @@ const transactionController = {
       });
       if (!txn || !txn.isActive) throw new AppError(404, "transaction_not_found");
 
-      if (req.user.id !== txn.createdById && req.user.role !== Roles.SUPERADMIN) throw new AppError(400, "no_access");
+      if (req.user.id !== txn.createdById && req.user.role !== Role.SUPERADMIN) throw new AppError(400, "no_access");
 
       const workbook = new ExcelJS.Workbook();
       const sheet = workbook.addWorksheet("Transactions");

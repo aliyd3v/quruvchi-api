@@ -1,7 +1,7 @@
 const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
-const { Roles } = require("../../../enums/RoleEnum");
+const { Role } = require("../../../generated/prisma");
 const Permissions = require("../../../enums/PermissionEnum");
 
 const userUpdateDto = z
@@ -14,7 +14,7 @@ const userUpdateDto = z
         .trim()
         .regex(/^(20|33|50|62|71|72|73|74|75|76|77|79|61|65|66|67|69|87|88|90|91|93|94|95|97|98|99)[0-9]{7}$/, { message: "phone_format_is_wrong" }),
       email: z.string({ message: "email_is_required" }).trim().email({ message: "email_format_is_wrong" }),
-      role: z.enum([Roles.ACCOUNTANT, Roles.ADMIN, Roles.WORKER], { message: "role_in_accountant_admin_worker" }),
+      role: z.enum([Role.ACCOUNTANT, Role.ADMIN, Role.WORKER], { message: "role_in_accountant_admin_worker" }),
       permissions: z
         .array(z.nativeEnum(Permissions))
         .default([])

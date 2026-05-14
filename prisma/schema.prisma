@@ -1,10 +1,10 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -21,7 +21,6 @@ model User {
   lname                     String?   @db.VarChar(255)
   phone                     String    @unique @db.VarChar(20)
   email                     String?   @unique @db.VarChar(255)
-  chatId                    String?   @map("chat_id")
   password                  String
   permissions               String[]  @default([])
   is2FAEnabled              Boolean   @default(false) @map("is_2fa_enabled")
@@ -133,27 +132,6 @@ model User {
   deletedCatalogItems      CatalogItem[]      @relation("catalog_item_deleted_by")
   createdCatalogMaterials  CatalogMaterial[]  @relation("catalog_material_created_by")
   deletedCatalogMaterials  CatalogMaterial[]  @relation("catalog_material_deleted_by")
-
-  createdServices Services[] @relation("service_created_by")
-  deletedServices Services[] @relation("service_deleted_by")
-
-  createdNews News[] @relation("news_created_by")
-  deletedNews News[] @relation("news_deleted_by")
-
-  createdProject Project[] @relation("project_created_by")
-  deletedProject Project[] @relation("project_deleted_by")
-
-  createdTechs Techs[] @relation("techs_created_by")
-  deletedTechs Techs[] @relation("techs_deleted_by")
-
-  createdGallery Gallery[] @relation("gallery_created_by")
-  deletedGallery Gallery[] @relation("gallery_deleted_by")
-
-  createdPartners Partners[] @relation("partber_created_by")
-  deletedPartners Partners[] @relation("partber_deleted_by")
-
-  readInboxes    Inbox[]
-  deletedInboxes Inbox[] @relation("inbox_deleted_by")
 
   callEvents CallEvent[]
 
@@ -647,28 +625,6 @@ model Attachment {
   catalogId          Int?              @map("catalog_id")
   previewCatalog     Catalog?          @relation("catalog_preview", fields: [previewCatalogId], references: [id], onDelete: Cascade)
   previewCatalogId   Int?
-
-  service   Services? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  serviceId Int?      @map("service_id")
-
-  previewImageNews   News? @relation("news_preview_image", fields: [previewImageNewsId], references: [id], onDelete: Cascade)
-  previewImageNewsId Int?
-  imageNews          News? @relation("news_images", fields: [imageNewsId], references: [id], onDelete: Cascade)
-  imageNewsId        Int?
-
-  previewImageProject   Project? @relation("project_preview_image", fields: [previewImageProjectId], references: [id], onDelete: Cascade)
-  previewImageProjectId Int?
-  imageProject          Project? @relation("project_images", fields: [imageProjectId], references: [id], onDelete: Cascade)
-  imageProjectId        Int?
-
-  techs   Techs? @relation("techs_image", fields: [techsId], references: [id], onDelete: Cascade)
-  techsId Int?   @map("techs_id")
-
-  gallery   Gallery? @relation("gallery_image", fields: [galleryId], references: [id], onDelete: Cascade)
-  galleryId Int?     @map("gallery_id")
-
-  partner   Partners? @relation("partner_image", fields: [partnerId], references: [id], onDelete: Cascade)
-  partnerId Int?      @map("partner_id")
 
   createdBy   User? @relation("attachment_created_by", fields: [createdById], references: [id], onDelete: SetNull)
   createdById Int?  @map("created_by_id")
@@ -1317,8 +1273,6 @@ model Catalog {
   direction   CatalogDirection? @relation(fields: [directionId], references: [id], onDelete: SetNull)
   directionId Int?              @map("direction_id")
 
-  inboxes Inbox[]
-
   createdBy   User? @relation("catalog_created_by", fields: [createdById], references: [id], onDelete: SetNull)
   createdById Int?  @map("created_by_id")
   deletedBy   User? @relation("catalog_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
@@ -1393,195 +1347,6 @@ model CatalogDirection {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
 }
 
-model Services {
-  id            Int     @id @default(autoincrement())
-  titleUz       String  @map("title_uz")
-  titleRu       String  @map("title_ru")
-  titleEn       String  @map("title_en")
-  descriptionUz String  @map("description_uz")
-  descriptionRu String  @map("description_ru")
-  descriptionEn String  @map("description_en")
-  sortOrder     Int     @default(0) @map("sort_order")
-  isActive      Boolean @default(true) @map("is_active")
-
-  image Attachment[]
-
-  sections ServiceSection[]
-
-  projects Project[]
-
-  createdBy   User? @relation("service_created_by", fields: [createdById], references: [id], onDelete: SetNull)
-  createdById Int?  @map("created_by_id")
-  deletedBy   User? @relation("service_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
-  deletedById Int?  @map("deleted_by_id")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-  inboxes   Inbox[]
-}
-
-model ServiceSection {
-  id        Int    @id @default(autoincrement())
-  titleUz   String
-  titleRu   String
-  titleEn   String
-  content   Json
-  sortOrder Int    @default(0) @map("sort_order")
-
-  service   Services @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  serviceId Int
-}
-
-model News {
-  id            Int      @id @default(autoincrement())
-  titleUz       String   @map("title_uz")
-  titleRu       String   @map("title_ru")
-  titleEn       String   @map("title_en")
-  descriptionUz String   @map("description_uz")
-  descriptionRu String   @map("description_ru")
-  descriptionEn String   @map("description_en")
-  textUz        String   @map("text_uz")
-  textRu        String   @map("text_ru")
-  textEn        String   @map("text_en")
-  date          DateTime @db.Timestamptz(6)
-  isActive      Boolean  @default(true) @map("is_active")
-
-  previewImage Attachment[] @relation("news_preview_image")
-  images       Attachment[] @relation("news_images")
-
-  createdBy   User? @relation("news_created_by", fields: [createdById], references: [id], onDelete: SetNull)
-  createdById Int?  @map("created_by_id")
-  deletedBy   User? @relation("news_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
-  deletedById Int?  @map("deleted_by_id")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-}
-
-model Project {
-  id            Int      @id @default(autoincrement())
-  titleUz       String   @map("title_uz")
-  titleRu       String   @map("title_ru")
-  titleEn       String   @map("title_en")
-  descriptionUz String   @map("description_uz")
-  descriptionRu String   @map("description_ru")
-  descriptionEn String   @map("description_en")
-  location      String?
-  date          DateTime @db.Timestamptz(6)
-  isActive      Boolean  @default(true) @map("is_active")
-
-  previewImage Attachment[] @relation("project_preview_image")
-  images       Attachment[] @relation("project_images")
-
-  service   Services? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  serviceId Int?      @map("service_id")
-
-  createdBy   User? @relation("project_created_by", fields: [createdById], references: [id], onDelete: SetNull)
-  createdById Int?  @map("created_by_id")
-  deletedBy   User? @relation("project_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
-  deletedById Int?  @map("deleted_by_id")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-}
-
-model Techs {
-  id       Int     @id @default(autoincrement())
-  titleUz  String  @map("title_uz")
-  titleRu  String  @map("title_ru")
-  titleEn  String  @map("title_en")
-  isActive Boolean @default(true) @map("is_active")
-
-  image Attachment[] @relation("techs_image")
-
-  createdBy   User? @relation("techs_created_by", fields: [createdById], references: [id], onDelete: SetNull)
-  createdById Int?  @map("created_by_id")
-  deletedBy   User? @relation("techs_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
-  deletedById Int?  @map("deleted_by_id")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-}
-
-model Gallery {
-  id       Int     @id @default(autoincrement())
-  isActive Boolean @default(true) @map("is_active")
-
-  image Attachment[] @relation("gallery_image")
-
-  createdBy   User? @relation("gallery_created_by", fields: [createdById], references: [id], onDelete: SetNull)
-  createdById Int?  @map("created_by_id")
-  deletedBy   User? @relation("gallery_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
-  deletedById Int?  @map("deleted_by_id")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-}
-
-model Partners {
-  id        Int     @id @default(autoincrement())
-  title     String
-  sortOrder Int     @default(0) @map("sort_order")
-  isActive  Boolean @default(true) @map("is_active")
-
-  image Attachment[] @relation("partner_image")
-
-  createdBy   User? @relation("partber_created_by", fields: [createdById], references: [id], onDelete: SetNull)
-  createdById Int?  @map("created_by_id")
-  deletedBy   User? @relation("partber_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
-  deletedById Int?  @map("deleted_by_id")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-}
-
-model Inbox {
-  id       Int     @id @default(autoincrement())
-  message  String?
-  phone    String
-  name     String
-  company  String?
-  isActive Boolean @default(true)
-
-  type InboxType @default(CONTACT)
-
-  status InboxStatus @default(PENDING)
-
-  service   Services? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  serviceId Int?
-
-  catalog   Catalog? @relation(fields: [catalogId], references: [id], onDelete: SetNull)
-  catalogId Int?
-
-  readUsers User[]
-
-  deletedBy   User? @relation("inbox_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
-  deletedById Int?  @map("deleted_by_id")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-}
-
-enum InboxType {
-  ORDER_PRODUCT
-  ORDER_SERVICE
-  CONTACT
-}
-
-enum InboxStatus {
-  PENDING
-  WORKING
-  COMPLETED
-  CANCELED
-}
-
 model CallEvent {
   id       Int     @id @default(autoincrement())
   isActive Boolean @default(true)
@@ -1597,5 +1362,4 @@ model CallEvent {
 
 enum CallEventType {
   NEW_TASK
-  NEW_INBOX
 }

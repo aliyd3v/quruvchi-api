@@ -1,7 +1,7 @@
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const balanceService = require("./balance.service");
-const prisma = require("./prisma");
-const { TransactionType, OrganizationStatus } = require("@prisma/client");
+const prisma = require("../lib/prisma");
+const { TransactionType, OrganizationStatus } = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const sleep = require("../utils/sleep");
 const inventoryService = require("./inventory.service");
@@ -62,7 +62,7 @@ class txnService {
               purpose,
               date,
               notes,
-              isReviewed: role === Roles.SUPERADMIN,
+              isReviewed: role === Role.SUPERADMIN,
               ...(organization && isFromOrganizationBalance && { usedFromOrganizationBalance: true }),
             },
             select: { id: true },
@@ -239,7 +239,7 @@ class txnService {
           if (!object) throw new AppError(404, "object_not_found");
 
           const txn = await tx.transaction.create({
-            data: { amount: amount, type: TransactionType.INCOME, objectId, createdById, purpose, date, notes, isReviewed: role === Roles.SUPERADMIN },
+            data: { amount: amount, type: TransactionType.INCOME, objectId, createdById, purpose, date, notes, isReviewed: role === Role.SUPERADMIN },
             select: { id: true },
           });
 
@@ -284,7 +284,7 @@ class txnService {
               createdById,
               purpose,
               notes,
-              isReviewed: role === Roles.SUPERADMIN,
+              isReviewed: role === Role.SUPERADMIN,
             },
             select: { id: true },
           });
@@ -703,8 +703,8 @@ class txnService {
           if (!txn) throw new AppError(404, "transaction_not_found");
           if (!txn.isActive) throw new AppError(400, "transaction_is_deleted");
 
-          if (role !== Roles.SUPERADMIN && txn.createdById !== deletedById) throw new AppError(400, "no_access");
-          if (role !== Roles.SUPERADMIN && new Date(txn.createdAt).getTime() + 10 * 60 * 1000 < Date.now()) throw new AppError(400, "allowed_time_for_delete_is_expired");
+          if (role !== Role.SUPERADMIN && txn.createdById !== deletedById) throw new AppError(400, "no_access");
+          if (role !== Role.SUPERADMIN && new Date(txn.createdAt).getTime() + 10 * 60 * 1000 < Date.now()) throw new AppError(400, "allowed_time_for_delete_is_expired");
 
           await tx.transaction.update({
             where: { id },

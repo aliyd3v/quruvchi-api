@@ -1,3 +1,5 @@
+const prisma = require("../lib/prisma");
+
 class taskService {
   async create() {}
 

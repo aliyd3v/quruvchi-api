@@ -1,5 +1,5 @@
 const fundTransferController = require("../controllers/fundTransfer.controller");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
 const { createFundToFundValidatorMiddleware } = require("../middlewares/validators/fundTransfer/createFundToFundValidatorMiddleware");
@@ -24,7 +24,7 @@ fundTransferRouter
   .patch("/trash/:id", fundTransferController.restoreOne)
   .delete("/trash/:id", fundTransferController.absoluteDelete)
   .get("/user-transfers", fundTransferController.getUserTransfers)
-  .put("/:id", checkRoleMiddleware(Roles.SUPERADMIN), updateTransferValidatorMiddleware, fundTransferController.updateOneTransfer)
+  .put("/:id", checkRoleMiddleware(Role.SUPERADMIN), updateTransferValidatorMiddleware, fundTransferController.updateOneTransfer)
   .delete("/:id", fundTransferController.deleteOneTransfer);
 
 module.exports = { fundTransferRouter };

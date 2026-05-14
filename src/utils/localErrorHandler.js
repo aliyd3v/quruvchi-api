@@ -1,4 +1,4 @@
-const { Prisma } = require("@prisma/client");
+const { Prisma } = require("../lib/prisma");
 const AppError = require("./AppError");
 
 exports.localErrorHandler = (error) => {

@@ -1,8 +1,8 @@
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { localErrorHandler } = require("../utils/localErrorHandler");
 const { idChecker } = require("../utils/idChecker");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const fileService = require("../services/file.service");
 const { deleteFileFromS3 } = require("../utils/s3");
 
@@ -78,10 +78,10 @@ const attachmentController = {
         return next(new AppError(404, "attachment_not_found"));
       }
 
-      if (attachment.createdById !== req.user.id && req.user.role !== Roles.SUPERADMIN) {
+      if (attachment.createdById !== req.user.id && req.user.role !== Role.SUPERADMIN) {
         return next(new AppError(400, "you_are_not_owner_of_this_attachment"));
       }
-      if (req.user.role !== Roles.SUPERADMIN && Date.now() - new Date(attachment.createdAt).getTime() > 10 * 60 * 1000) {
+      if (req.user.role !== Role.SUPERADMIN && Date.now() - new Date(attachment.createdAt).getTime() > 10 * 60 * 1000) {
         return next(new AppError(400, "allowed_time_for_delete_is_expired"));
       }
 

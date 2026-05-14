@@ -1,4 +1,4 @@
-const { Unit } = require("@prisma/client");
+const { Unit } = require("../../../generated/prisma");
 const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");

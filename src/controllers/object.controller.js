@@ -1,11 +1,11 @@
-const { ObjectStatus, WorkType, TransactionType } = require("@prisma/client");
+const { ObjectStatus, WorkType, TransactionType } = require("../lib/prisma");
 const ExcelJS = require("exceljs");
-const prisma = require("../services/prisma");
+const prisma = require("../lib/prisma");
 const { toMajor, toMinor, fromMinorUnits } = require("../utils/amount");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { deleteFilesFromS3 } = require("../utils/s3");
 
 const allowedColumnKeys = ["name", "serviceName", "description", "status", "projectType", "workType", "productName", "createdAt", "updatedAt"];
@@ -744,10 +744,10 @@ const objectController = {
         role: user.role,
         fund: { balance: user.balance },
       }));
-      const prorabs = assigned.filter((a) => a.role === Roles.ADMIN);
-      const workers = assigned.filter((a) => a.role === Roles.WORKER);
-      const pto = assigned.filter((a) => a.role === Roles.PTO);
-      const accountants = assigned.filter((a) => a.role === Roles.ACCOUNTANT);
+      const prorabs = assigned.filter((a) => a.role === Role.ADMIN);
+      const workers = assigned.filter((a) => a.role === Role.WORKER);
+      const pto = assigned.filter((a) => a.role === Role.PTO);
+      const accountants = assigned.filter((a) => a.role === Role.ACCOUNTANT);
       const transfers = [...object.transfersFrom, ...object.transfersTo].sort((a, b) => b.createdAt - a.createdAt);
 
       const assignedsCount = assigned.length;
@@ -1342,7 +1342,7 @@ const objectController = {
         select: {
           id: true,
           assigned: {
-            where: { isActive: true, role: Roles.WORKER },
+            where: { isActive: true, role: Role.WORKER },
             select: {
               id: true,
               fname: true,
@@ -2046,19 +2046,19 @@ const objectController = {
 
       const roleToUz = (role) => {
         switch (role) {
-          case Roles.ACCOUNTANT:
+          case Role.ACCOUNTANT:
             return "Бухгалтер";
             break;
-          case Roles.SUPERADMIN:
+          case Role.SUPERADMIN:
             return "Раҳбар";
             break;
-          case Roles.ADMIN:
+          case Role.ADMIN:
             return "Прораб";
             break;
-          case Roles.PTO:
+          case Role.PTO:
             return "ПТО";
             break;
-          case Roles.WORKER:
+          case Role.WORKER:
             return "Ишчи";
             break;
           default:
@@ -2373,19 +2373,19 @@ const objectController = {
 
       const roleToUz = (role) => {
         switch (role) {
-          case Roles.ACCOUNTANT:
+          case Role.ACCOUNTANT:
             return "Бухгалтер";
             break;
-          case Roles.SUPERADMIN:
+          case Role.SUPERADMIN:
             return "Раҳбар";
             break;
-          case Roles.ADMIN:
+          case Role.ADMIN:
             return "Прораб";
             break;
-          case Roles.PTO:
+          case Role.PTO:
             return "ПТО";
             break;
-          case Roles.WORKER:
+          case Role.WORKER:
             return "Ишчи";
             break;
           default:

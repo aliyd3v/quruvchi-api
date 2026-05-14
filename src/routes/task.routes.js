@@ -1,6 +1,6 @@
 const taskController = require("../controllers/task.controller");
 const Permissions = require("../enums/PermissionEnum");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
@@ -27,7 +27,7 @@ taskRouter
   .delete("/task-history/:id", taskController.deleteOneTaskHistory)
   .patch("/sub-task/:id", taskController.changeStatusByWorker)
   .patch("/sub-task/:id/start", taskController.changeSubTaskToInProgress)
-  .patch("/sub-task/:id/check", checkRoleMiddleware(Roles.SUPERADMIN), taskController.checkTheSubTask)
+  .patch("/sub-task/:id/check", checkRoleMiddleware(Role.SUPERADMIN), taskController.checkTheSubTask)
   .delete("/sub-task/:id", checkPermissionMiddleware(Permissions.task_crud), taskController.deleteOneSubTask)
   .get("/sub-task/:id", checkPermissionMiddleware(Permissions.task_crud), taskController.getOneSubTask)
   .get("/user-office-tasks", taskController.getUserOfficeTasks)
@@ -43,13 +43,13 @@ taskRouter
   .get("/office-tasks", checkPermissionMiddleware(Permissions.office_task_crud), taskController.getAllOfficeTasks)
   .get("/get-office-tasks-excel-doc", checkPermissionMiddleware(Permissions.office_task_crud), taskController.getOfficeTasksExcelDoc)
   .get("/search", checkPermissionMiddleware(Permissions.task_crud), taskController.search)
-  .get("/trash", checkRoleMiddleware(Roles.SUPERADMIN), taskController.getDeleted)
+  .get("/trash", checkRoleMiddleware(Role.SUPERADMIN), taskController.getDeleted)
   .post("/comment", taskCommentCreateValidatorMiddleware, taskController.createTaskComment)
   .post("/sa-comment", checkPermissionMiddleware(Permissions.task_crud), taskCommentFromSAToWorkerValidatorMiddleware, taskController.createCommentFromSA)
   .delete("/comment/:id", taskController.deleteOneComment)
-  .patch("/trash/:id", checkRoleMiddleware(Roles.SUPERADMIN), taskController.restoreOne)
-  .delete("/trash/:id", checkRoleMiddleware(Roles.SUPERADMIN), taskController.absoluteDelete)
-  .patch("/:id/check", checkRoleMiddleware(Roles.SUPERADMIN), taskController.checkTheTask)
+  .patch("/trash/:id", checkRoleMiddleware(Role.SUPERADMIN), taskController.restoreOne)
+  .delete("/trash/:id", checkRoleMiddleware(Role.SUPERADMIN), taskController.absoluteDelete)
+  .patch("/:id/check", checkRoleMiddleware(Role.SUPERADMIN), taskController.checkTheTask)
   .get("/:id", checkPermissionMiddleware(Permissions.task_crud), taskController.getOne)
   .get("/:id/get-excel-doc", checkPermissionMiddleware(Permissions.task_crud), taskController.getOneTaskExcelDoc)
   .put("/:id", checkPermissionMiddleware(Permissions.task_crud), taskUpdateValidatorMiddlewareV2, taskController.updateOne)

@@ -1,8 +1,8 @@
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const AppError = require("../utils/AppError");
 const sleep = require("../utils/sleep");
 const balanceService = require("./balance.service");
-const prisma = require("./prisma");
+const prisma = require("../lib/prisma");
 
 class transferService {
   async createUserToUser({ recipientUserId, createdById, amount, note, maxRetries = 3 } = {}) {
@@ -295,8 +295,8 @@ class transferService {
           });
           if (!user) throw new AppError(404, "user_not_found");
 
-          if (role !== Roles.SUPERADMIN && userId !== transfer.createdById) throw new AppError(400, "no_access");
-          if (Date.now() - transfer.createdAt.getTime() >= 10 * 60 * 1000 && role !== Roles.SUPERADMIN) throw new AppError(400, "delete_time_expired");
+          if (role !== Role.SUPERADMIN && userId !== transfer.createdById) throw new AppError(400, "no_access");
+          if (Date.now() - transfer.createdAt.getTime() >= 10 * 60 * 1000 && role !== Role.SUPERADMIN) throw new AppError(400, "delete_time_expired");
 
           await tx.fundTransfer.update({
             where: { id: transferId },
@@ -354,8 +354,8 @@ class transferService {
           if (!user) throw new AppError(404, "user_not_found");
           if (!user.isActive) throw new AppError(400, "user_is_deleted");
 
-          if (role !== Roles.SUPERADMIN && userId !== transfer.createdById) throw new AppError(400, "no_access");
-          if (Date.now() - transfer.createdAt.getTime() >= 10 * 60 * 1000 && role !== Roles.SUPERADMIN) throw new AppError(400, "delete_time_expired");
+          if (role !== Role.SUPERADMIN && userId !== transfer.createdById) throw new AppError(400, "no_access");
+          if (Date.now() - transfer.createdAt.getTime() >= 10 * 60 * 1000 && role !== Role.SUPERADMIN) throw new AppError(400, "delete_time_expired");
 
           await tx.fundTransfer.update({
             where: { id: transferId },

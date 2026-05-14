@@ -1,6 +1,6 @@
 const userController = require("../controllers/user.controller");
 const Permissions = require("../enums/PermissionEnum");
-const { Roles } = require("../enums/RoleEnum");
+const { Role } = require("../generated/prisma");
 const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
@@ -28,17 +28,17 @@ userRouter
   .get("/filtered-by-role", userController.getFilteredByRole)
   .post("/worker-create-to-object/", checkPermissionMiddleware(Permissions.object_crud), workerCreateToObjectValidatorMiddleware, userController.createWorkerToObject)
   .delete("/worker-delete-from-object/:objectId/:workerId", checkPermissionMiddleware(Permissions.object_crud), userController.deleteWokerFromObject)
-  .get("/trash", checkRoleMiddleware(Roles.SUPERADMIN), userController.deactivatedUsers)
-  .get("/trash/search", checkRoleMiddleware(Roles.SUPERADMIN), userController.searchDeletedWithPagination)
-  .patch("/trash/:id", checkRoleMiddleware(Roles.SUPERADMIN), userController.activateOne)
-  .delete("/trash/:id", checkRoleMiddleware(Roles.SUPERADMIN), userController.absoluteDeleteOne)
+  .get("/trash", checkRoleMiddleware(Role.SUPERADMIN), userController.deactivatedUsers)
+  .get("/trash/search", checkRoleMiddleware(Role.SUPERADMIN), userController.searchDeletedWithPagination)
+  .patch("/trash/:id", checkRoleMiddleware(Role.SUPERADMIN), userController.activateOne)
+  .delete("/trash/:id", checkRoleMiddleware(Role.SUPERADMIN), userController.absoluteDeleteOne)
   .get("/:id", checkPermissionMiddleware(Permissions.user_crud), userController.getOne)
   .get("/:id/transfers", userController.getUserTransfers)
   .get("/:id/given-spent-list", userController.getUserIncomeAndExpenditure)
   .get("/:id/user-balance-excel-doc", userController.getUserIncomeAndExpenditureExcelDoc)
   .put("/:id", checkPermissionMiddleware(Permissions.user_crud), userUpdateValidatorMiddleware, userController.updateOne)
   .patch("/:id/change-password", checkPermissionMiddleware(Permissions.user_crud), changePasswordFromSAValidatorMiddleware, userController.changePasswordUser)
-  .delete("/:id", checkRoleMiddleware(Roles.SUPERADMIN), checkPermissionMiddleware(Permissions.user_crud), userController.deactivateOne)
+  .delete("/:id", checkRoleMiddleware(Role.SUPERADMIN), checkPermissionMiddleware(Permissions.user_crud), userController.deactivateOne)
   .post("/:id/block", checkPermissionMiddleware(Permissions.user_blocks), blockUserValidatorMiddleware, userController.blockOne)
   .post("/:id/remove-block", checkPermissionMiddleware(Permissions.user_blocks), userController.removeBlock);
 
