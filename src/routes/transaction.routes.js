@@ -10,7 +10,7 @@ const { incomeToSelfCreateValidatorMiddleware } = require("../middlewares/valida
 const { transactionItemUpdateValidatorMiddleware } = require("../middlewares/validators/transaction/transactionItemUpdateValidatorMiddleware");
 const { uploadMultipleFiles } = require("../middlewares/uploadToStorageMiddleware");
 const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
-const Permissions = require("../enums/PermissionEnum");
+const Permissions = require("../constants/PermissionEnum");
 const { transactionItemCreateValidatorMiddleware } = require("../middlewares/validators/transaction/transactionItemCreateValidatorMiddleware");
 
 const transactionRouter = require("express").Router();

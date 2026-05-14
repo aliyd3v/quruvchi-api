@@ -1,4 +1,4 @@
-const Permissions = require("../enums/PermissionEnum");
+const Permissions = require("../constants/PermissionEnum");
 
 const permissionController = {
   getAll(_req, res, _next) {

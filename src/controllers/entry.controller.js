@@ -1,4 +1,4 @@
-const { InvoiceStatus, EntryType, EntryColor } = require("../lib/prisma");
+const { InvoiceStatus, EntryType, EntryColor } = require("../generated/prisma");
 const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { localErrorHandler } = require("../utils/localErrorHandler");
@@ -8,7 +8,7 @@ const fileService = require("../services/file.service");
 const getWeekRange = require("../utils/getWeekRange");
 const { deleteFilesFromS3 } = require("../utils/s3");
 const callService = require("../services/call.service");
-const translations = require("../constants");
+const translations = require("../constants/translation");
 
 const allowedColumnKeys = ["date", "amount", "contractAmount", "createdAt", "updatedAt", "deletedAt"];
 

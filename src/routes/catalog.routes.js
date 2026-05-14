@@ -1,5 +1,5 @@
 const catalogController = require("../controllers/catalog.controller");
-const Permissions = require("../enums/PermissionEnum");
+const Permissions = require("../constants/PermissionEnum");
 const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
 const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");

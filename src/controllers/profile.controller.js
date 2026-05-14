@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Config = require("../config");
-const translations = require("../constants");
+const translation = require("../constants/translation");
 const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { comparePassword, hashPassword } = require("../utils/bcrypt");
@@ -92,7 +92,7 @@ const profileController = {
       if (!isTruePassword) {
         throw new AppError(400, "old_password_wrong", {
           path: "password",
-          message: translations["wrong_password"],
+          message: translation["wrong_password"],
         });
       }
 

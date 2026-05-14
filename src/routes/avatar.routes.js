@@ -1,5 +1,5 @@
 const avatarController = require("../controllers/avatar.controller");
-const Permissions = require("../enums/PermissionEnum");
+const Permissions = require("../constants/PermissionEnum");
 const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
 const { uploadSingleFile } = require("../middlewares/uploadToStorageMiddleware");

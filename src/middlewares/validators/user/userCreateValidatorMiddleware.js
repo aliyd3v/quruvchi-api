@@ -2,7 +2,7 @@ const { z } = require("zod");
 const AppError = require("../../../utils/AppError");
 const { formatZodError } = require("../../../utils/formatZodError");
 const { Role } = require("../../../generated/prisma");
-const Permissions = require("../../../enums/PermissionEnum");
+const Permissions = require("../../../constants/PermissionEnum");
 
 const dto = z
   .object(

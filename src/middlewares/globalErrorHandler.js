@@ -1,4 +1,4 @@
-const translations = require("../constants");
+const translation = require("../constants/translation");
 const AppError = require("../utils/AppError");
 const { sendLogToTg } = require("../utils/sendLogToTg");
 
@@ -7,7 +7,7 @@ exports.globalErrorHandler = async (err, _req, res, _next) => {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       status: err.status,
-      message: translations[err.message] || err.message,
+      message: translation[err.message] || err.message,
       errors: err.errors,
       // stack: err.stack,
     });
@@ -18,7 +18,7 @@ exports.globalErrorHandler = async (err, _req, res, _next) => {
 
   return res.status(500).json({
     status: "error",
-    message: err.message || translations["something_went_wrong"],
+    message: err.message || translation["something_went_wrong"],
     // stack: err.stack
   });
 };

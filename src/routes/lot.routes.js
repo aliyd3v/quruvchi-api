@@ -11,7 +11,7 @@ const { lotUpdateValidatorMiddleware } = require("../middlewares/validators/lot/
 const { lotTaskCompleteValidatorMiddleware } = require("../middlewares/validators/lot/lotTaskCompleteValidatorMiddleware");
 const { lotTaskUpdateValidatorMiddleware } = require("../middlewares/validators/lot/lotTaskUpdateValidatorMiddleware");
 const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
-const Permissions = require("../enums/PermissionEnum");
+const Permissions = require("../constants/PermissionEnum");
 
 const lotRouter = require("express").Router();
 

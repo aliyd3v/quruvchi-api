@@ -1,4 +1,4 @@
-const translations = {
+const translation = {
   bad_request: {
     ru: "Некорректный запрос",
     uz: "Noto‘g‘ri so‘rov",
@@ -2341,4 +2341,4 @@ const translations = {
   },
 };
 
-module.exports = translations;
+module.exports = translation;

@@ -1,5 +1,5 @@
 const branchController = require("../controllers/branch.controller");
-const Permissions = require("../enums/PermissionEnum");
+const Permissions = require("../constants/PermissionEnum");
 const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
 const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
 const { branchCreateValidatorMiddleware } = require("../middlewares/validators/branch/branchCreateValidatorMiddleware");
