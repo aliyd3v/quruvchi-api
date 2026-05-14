@@ -6,6 +6,7 @@ const AppError = require("../utils/AppError");
 const { comparePassword, hashPassword } = require("../utils/bcrypt");
 const { localErrorHandler } = require("../utils/localErrorHandler");
 const { OAuth2Client } = require("google-auth-library");
+
 const client = new OAuth2Client(Config.GOOGLE_CLIENT_ID);
 
 const profileController = {
@@ -14,7 +15,7 @@ const profileController = {
 
     res.status(200).json({
       status: "success",
-      data: { ...req.user, fund: { balance: req.user.balance } },
+      data: req.user,
     });
   },
 
