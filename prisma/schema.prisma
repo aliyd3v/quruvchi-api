@@ -1,0 +1,1601 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  ACCOUNTANT
+  WORKER
+  PTO
+}
+
+model User {
+  id                        Int       @id @default(autoincrement())
+  fname                     String?   @db.VarChar(255)
+  lname                     String?   @db.VarChar(255)
+  phone                     String    @unique @db.VarChar(20)
+  email                     String?   @unique @db.VarChar(255)
+  chatId                    String?   @map("chat_id")
+  password                  String
+  permissions               String[]  @default([])
+  is2FAEnabled              Boolean   @default(false) @map("is_2fa_enabled")
+  twoFASecret               String?   @map("two_fa_secret")
+  isActive                  Boolean   @default(true) @map("is_active")
+  blockedUntil              DateTime? @map("blocked_until") @db.Timestamptz(6)
+  lastSeans                 DateTime? @map("last_seans") @db.Timestamptz(6)
+  currentBaseSalary         BigInt    @default(0)
+  lastPaidDate              DateTime? @map("last_paid_date") @db.Timestamptz(6)
+  currentSalaryMonthEndDate DateTime? @map("salary_month_end_date") @db.Timestamptz(6)
+  birthday                  DateTime? @db.Timestamptz(6)
+
+  balance      BigInt @default(0)
+  totalIncome  BigInt @default(0) @map("total_income")
+  totalExpense BigInt @default(0) @map("total_expense")
+  version      Int    @default(0)
+  pwdVersion   Int    @default(0) @map("pwd_version")
+
+  role Role
+
+  ResetAuthAttempts ResetAuthAttempts[] @relation("user_reset_auth_attemt")
+
+  avatar Avatar?
+
+  createdTasks Task[] @relation("created_task")
+  deletedTasks Task[] @relation("task_deleted_by")
+
+  lots             Lot[]     @relation("lot_assigneds")
+  createdLots      Lot[]     @relation("lot_created_by")
+  deletedLots      Lot[]     @relation("lot_deleted_by")
+  lotTasks         LotTask[]
+  completedLotTask LotTask[] @relation("lot_task_completed_by")
+  createdLotTask   LotTask[] @relation("lot_task_created_by")
+
+  attachment         Attachment[] @relation("attachment_created_by")
+  deletedAttachments Attachment[] @relation("attachment_deleted_by")
+
+  objects        Object[] @relation("assigned_users")
+  createdObjects Object[] @relation("object_created_by")
+  deletedObjects Object[] @relation("object_deleted_by")
+
+  executedTransactions Transaction[]     @relation("txn_executed_by")
+  createdTransactions  Transaction[]     @relation("txn_created_by")
+  deletedTransactions  Transaction[]     @relation("txn_deleted_by")
+  createdTxnItems      TransactionItem[] @relation("txn_item_created_by")
+  deletedTxnItems      TransactionItem[] @relation("txn_item_deleted_by")
+
+  organizationsCreated Organization[] @relation("organization_created_by")
+  deletedOrganization  Organization[] @relation("organization_deleted_by")
+
+  workVolumes        WorkVolume[] @relation("work_volume_created_by")
+  deletedWorkVolumes WorkVolume[] @relation("work_volume_deleted_by")
+
+  createdDebts           Debt[]            @relation("debt_created_by")
+  deletedDebts           Debt[]            @relation("debt_deleted_by")
+  createdDebtTxns        DebtTransaction[] @relation("debt_txn_created_by")
+  deletedDebtTxns        DebtTransaction[] @relation("debt_txn_deleted_by")
+  createdDebtItems       DebtItem[]        @relation("debt_item_created_by")
+  deletedDebtItems       DebtItem[]        @relation("debt_item_deleted_by")
+  createdDebtPayments    DebtPayment[]     @relation("debt_payment_created_by")
+  deletedDebtPayments    DebtPayment[]     @relation("debt_payment_deleted_by")
+  performedDebtAuditLogs DebtAuditLog[]    @relation("debt_audit_log_performed_by")
+
+  answerToWorkVolumes        AnswerToWorkVolume[] @relation("answer_to_work_volume_created_by")
+  deletedAnswerToWorkVolumes AnswerToWorkVolume[] @relation("answer_to_work_volume_deleted_by")
+
+  salaryMonths        SalaryMonth[] @relation("user_salary_month")
+  createdSalaryMonths SalaryMonth[] @relation("salary_month_created_by")
+  deletedSalaryMonths SalaryMonth[] @relation("salary_month_deleted_by")
+
+  salaryPayments        SalaryPayment[] @relation("user_salary_payment")
+  createdSalaryPayments SalaryPayment[] @relation("salary_payment_created_by")
+  deletedSalaryPayments SalaryPayment[] @relation("salary_payment_deleted_by")
+
+  complatedTasks Task[] @relation("task_complated_by")
+
+  tasks TaskAssignment[]
+
+  taskComments        TaskComment[] @relation("task_comment_created_by")
+  deletedTaskComments TaskComment[] @relation("task_comment_deleted_by")
+  commetnsToUser      TaskComment[] @relation("comments_to_user")
+
+  taskHistories        TaskHistory[] @relation("task_history_created_by")
+  deletedTaskHistories TaskHistory[] @relation("task_history_deleted_by")
+
+  acceptedTransfers FundTransfer[] @relation("accepted_user_transfers")
+  sendedTransfers   FundTransfer[] @relation("sended_user_transfers")
+  createdTransfers  FundTransfer[] @relation("transfer_created_by")
+  deletedTransfers  FundTransfer[] @relation("trnasfer_deleted_by")
+
+  createdInventories Inventory[] @relation("inventory_created_by")
+  deletedInventories Inventory[] @relation("inventory_deleted_by")
+
+  executedInventoryHistories InventoryHistory[] @relation("inventory_history_executed_by")
+  createdInventoryHistories  InventoryHistory[] @relation("inventory_history_created_by")
+  deletedInventoryHistories  InventoryHistory[] @relation("inventory_history_deleted_by")
+
+  createdBranches Branch[] @relation("branch_created_by")
+  deletedBranches Branch[] @relation("branch_deleted_by")
+
+  createdEntries Entry[] @relation("entry_created_by")
+  deletedEntries Entry[] @relation("entry_deleted_by")
+
+  createdCatalogDirections CatalogDirection[] @relation("catalog_direction_created_by")
+  deletedCatalogDirections CatalogDirection[] @relation("catalog_direction_deleted_by")
+  createdCatalogs          Catalog[]          @relation("catalog_created_by")
+  deletedCatalogs          Catalog[]          @relation("catalog_deleted_by")
+  createdCatalogItems      CatalogItem[]      @relation("catalog_item_created_by")
+  deletedCatalogItems      CatalogItem[]      @relation("catalog_item_deleted_by")
+  createdCatalogMaterials  CatalogMaterial[]  @relation("catalog_material_created_by")
+  deletedCatalogMaterials  CatalogMaterial[]  @relation("catalog_material_deleted_by")
+
+  createdServices Services[] @relation("service_created_by")
+  deletedServices Services[] @relation("service_deleted_by")
+
+  createdNews News[] @relation("news_created_by")
+  deletedNews News[] @relation("news_deleted_by")
+
+  createdProject Project[] @relation("project_created_by")
+  deletedProject Project[] @relation("project_deleted_by")
+
+  createdTechs Techs[] @relation("techs_created_by")
+  deletedTechs Techs[] @relation("techs_deleted_by")
+
+  createdGallery Gallery[] @relation("gallery_created_by")
+  deletedGallery Gallery[] @relation("gallery_deleted_by")
+
+  createdPartners Partners[] @relation("partber_created_by")
+  deletedPartners Partners[] @relation("partber_deleted_by")
+
+  readInboxes    Inbox[]
+  deletedInboxes Inbox[] @relation("inbox_deleted_by")
+
+  callEvents CallEvent[]
+
+  createdUsers User[] @relation("user_created_by")
+  deletedUsers User[] @relation("user_deleted_by")
+
+  createdBy   User? @relation("user_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("user_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model ResetAuthAttempts {
+  id           Int       @id @default(autoincrement())
+  attemptId    String    @unique @default(uuid()) @map("attempt_id") @db.Uuid()
+  userId       Int       @map("user_id")
+  user         User      @relation("user_reset_auth_attemt", fields: [userId], references: [id])
+  ip           String
+  userAgent    String    @map("user_agent")
+  code         String
+  type         String    @db.VarChar(255)
+  used         Boolean   @default(false)
+  usedForReset Boolean   @default(false) @map("used_for_reset")
+  blocked      Boolean   @default(false)
+  period       Int       @default(1)
+  attemptCount Int       @default(0) @map("attempt_count")
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model TempToken {
+  id        Int       @id @default(autoincrement())
+  jti       String    @unique @default(uuid())
+  userId    Int       @map("user_id")
+  type      String?
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+}
+
+model Avatar {
+  id        Int      @id @default(autoincrement())
+  filename  String   @db.VarChar(255)
+  url       String
+  size      Int?
+  userId    Int      @unique @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+}
+
+model Organization {
+  id               Int     @id @default(autoincrement())
+  organizationName String  @map("organization_name") @db.VarChar(255)
+  stirNumber       String  @map("stir_number") @db.VarChar(255)
+  ownerName        String  @map("owner_name") @db.VarChar(255)
+  ownerPhone       String? @map("owner_phone") @db.VarChar(20)
+  sellerPhone      String? @map("seller_phone") @db.VarChar(20)
+  isActive         Boolean @default(true) @map("is_active")
+
+  balance      BigInt @default(0)
+  totalExpense BigInt @default(0) @map("total_expense")
+  totalIncome  BigInt @default(0) @map("totla_income")
+  version      Int    @default(0)
+
+  address    Location? @relation(fields: [locationId], references: [id])
+  locationId Int?      @map("location_id")
+
+  status OrganizationStatus @default(NOT_ACTIVE)
+
+  parent   Organization?  @relation("organization_branch", fields: [parentId], references: [id])
+  parentId Int?           @map("parent_id")
+  branches Organization[] @relation("organization_branch")
+
+  transactions Transaction[]
+
+  transfersFrom FundTransfer[] @relation("to_organization_transfers")
+  transfersto   FundTransfer[] @relation("from_organization_transfers")
+
+  debts Debt[]
+
+  entries Entry[]
+
+  inventoryHistories InventoryHistory[]
+
+  tasks Task[]
+
+  taskClient Task[] @relation("task_client_organization")
+
+  createdBy   User? @relation("organization_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("organization_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum OrganizationStatus {
+  ACTIVE
+  NOT_ACTIVE
+}
+
+model Object {
+  id           Int      @id @default(autoincrement())
+  name         String
+  serviceName  String?  @map("service_name")
+  description  String
+  startDate    DateTime @map("start_date") @db.Timestamptz(6)
+  endDate      DateTime @map("end_date") @db.Timestamptz(6)
+  budget       BigInt   @default(0)
+  balance      BigInt   @default(0)
+  totalIncome  BigInt   @default(0) @map("total_income")
+  totalExpense BigInt   @default(0) @map("total_expense")
+  version      Int      @default(0)
+  isActive     Boolean  @default(true) @map("is_active")
+
+  status ObjectStatus @default(ACTIVE)
+
+  address    Location? @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  locationId Int?      @map("location_id")
+
+  projectType ProjectType? @map("project_type")
+  workType    WorkType?    @default(OTHER) @map("work_type")
+
+  attachments Attachment[]
+  tasks       Task[]
+
+  workVolumes WorkVolume[]
+
+  transfersTo   FundTransfer[] @relation("from_object_transfers")
+  transfersFrom FundTransfer[] @relation("to_object_transfers")
+
+  transactions Transaction[]
+
+  salaryMonths SalaryMonth[]
+
+  inventoryHistory InventoryHistory[]
+
+  assigned    User[] @relation("assigned_users")
+  createdById Int?   @map("created_by_id")
+  createdBy   User?  @relation("object_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  deletedById Int?   @map("deleted_by_id")
+  deletedBy   User?  @relation("object_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Location {
+  id           Int            @id @default(autoincrement())
+  lat          Decimal        @db.Decimal(9, 6)
+  lon          Decimal        @db.Decimal(9, 6)
+  object       Object[]
+  organization Organization[]
+}
+
+enum ObjectStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  LATE
+}
+
+enum ProjectType {
+  REPAIR
+  CONSTRUCTION
+  EQUIPMENT
+  OTHER
+}
+
+enum WorkType {
+  CONSTRUCTION
+  TRADE
+  FURNITURE
+  SEWING
+  SMETA
+  OTHER
+}
+
+model WorkVolume {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  quantity    Float
+  unitPrice   BigInt  @map("unit_price")
+  totalAmount BigInt  @map("total_amount")
+  spentAmount BigInt  @default(0) @map("spent_amount")
+  version     Int     @default(0)
+  isActive    Boolean @default(true) @map("is_active")
+
+  unit Unit
+
+  object   Object? @relation(fields: [objectId], references: [id], onDelete: Cascade)
+  objectId Int?    @map("objetc_id")
+
+  createdBy   User? @relation("work_volume_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("work_volume_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  answersToWorkVolume AnswerToWorkVolume[]
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum Unit {
+  M
+  M2
+  M3
+  TON
+  KG
+  L
+  PCS
+  H
+  DAY
+  SET
+  UZS
+  WORK_VOLUME
+  SERVICE
+}
+
+enum WorkVolumeStatus {
+  OVERRUN
+}
+
+model AnswerToWorkVolume {
+  id          Int     @id @default(autoincrement())
+  quantity    Float
+  unitPrice   BigInt  @map("unit_price")
+  totalAmount BigInt  @map("total_amount")
+  notes       String?
+  isActive    Boolean @default(true) @map("is_active")
+
+  unit Unit
+
+  workVolume   WorkVolume @relation(fields: [workVolumeId], references: [id], onDelete: Cascade)
+  workVolumeId Int        @map("work_volume_id")
+
+  createdBy   User? @relation("answer_to_work_volume_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("answer_to_work_volume_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Lot {
+  id                         Int       @id @default(autoincrement())
+  title                      String
+  lotId                      String?   @map("lot_id")
+  startingPrice              BigInt?   @map("starting_price")
+  guaranteeAmount            BigInt?   @map("guarantee_amount")
+  lotEndDate                 DateTime? @map("lot_end_date") @db.Timestamptz(6)
+  objectId                   String?   @map("object_id")
+  tenderType                 String?   @map("tender_type")
+  lotBranch                  String?   @map("lot_branch")
+  workExecutionType          String?   @map("work_execution_type")
+  objectComplexityCategory   String?   @map("object_complexity_category")
+  programCategory            String?   @map("program_category")
+  fundingSource              String?   @map("funding_source")
+  fundingAmountCurrentYear   BigInt?   @map("funding_amount_current_year")
+  workDurationDays           Int?      @map("work_duration_days")
+  proposalSubmissionDeadline Int?      @map("proposal_submission_deadline")
+  customer                   String?
+  objectRegion               String?   @map("object_region")
+  objectCityDistrict         String?   @map("object_city_district")
+  objectAddress              String?   @map("object_address")
+  organizerName              String?   @map("organizer_name")
+  contactPerson              String?   @map("contact_person")
+  organizationDirector       String?   @map("organization_director")
+  organizationPhone          String?   @map("organization_phone")
+  organizationEmail          String?   @map("organization_email")
+  tenderFiles                String?   @map("tender_files")
+
+  isActive Boolean    @default(true) @map("is_active")
+  status   LotStatus? @default(OPEN)
+
+  tasks LotTask[]
+
+  attachments Attachment[]
+
+  assigned    User[] @relation("lot_assigneds")
+  createdBy   User?  @relation("lot_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?   @map("created_by_id")
+  deletedBy   User?  @relation("lot_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?   @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum LotStatus {
+  OPEN
+  LATE
+  IN_PROCESS
+  ENDED
+  SUCCESS
+}
+
+model LotTask {
+  id Int @id @default(autoincrement())
+
+  taskDescription      String  @map("task_description")
+  completedDescription String? @map("completed_description")
+  isActive             Boolean @default(true) @map("is_active")
+
+  status LotTaskStatus? @default(NOT_STARTED)
+
+  lot   Lot? @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  lotId Int? @map("lot_id")
+
+  taskFiles      Attachment[] @relation("lot_task_files")
+  complatedFiles Attachment[] @relation("lot_task_complated_files")
+
+  assigned      User[]
+  completedBy   User?  @relation("lot_task_completed_by", fields: [completedById], references: [id], onDelete: SetNull)
+  completedById Int?
+  createdBy     User?  @relation("lot_task_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById   Int?   @map("created_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum LotTaskStatus {
+  NOT_STARTED
+  IN_PROCESS
+  CHECKING
+  COMPLETED
+}
+
+model FundTransfer {
+  id             Int     @id @default(autoincrement())
+  amount         BigInt
+  note           String?
+  contractNumber String? @map("contract_number")
+  isActive       Boolean @default(true) @map("is_active")
+
+  recipientUser   User? @relation("accepted_user_transfers", fields: [recipientUserId], references: [id], onDelete: SetNull)
+  recipientUserId Int?  @map("recipient_user_id")
+  senderUser      User? @relation("sended_user_transfers", fields: [senderUserId], references: [id], onDelete: SetNull)
+  senderUserId    Int?  @map("sender_user_id")
+
+  fromObject   Object? @relation("from_object_transfers", fields: [fromObjectId], references: [id], onDelete: SetNull)
+  fromObjectId Int?    @map("from_object_id")
+  toObject     Object? @relation("to_object_transfers", fields: [toObjectId], references: [id], onDelete: SetNull)
+  toObjectId   Int?    @map("to_object_id")
+
+  toOrganization     Organization? @relation("to_organization_transfers", fields: [toOrganizationId], references: [id], onDelete: SetNull)
+  toOrganizationId   Int?          @map("to_organization_id")
+  fromOrganization   Organization? @relation("from_organization_transfers", fields: [fromOrganizationId], references: [id], onDelete: SetNull)
+  fromOrganizationId Int?          @map("from_organization_id")
+
+  createdBy   User? @relation("transfer_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?
+  deletedBy   User? @relation("trnasfer_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Transaction {
+  id         Int      @id @default(autoincrement())
+  notes      String?
+  amount     BigInt
+  date       DateTime @default(now()) @db.Timestamptz(6)
+  purpose    String?
+  isReviewed Boolean  @default(false) @map("is_reviewed")
+  isSalary   Boolean  @default(false) @map("is_salary")
+  isActive   Boolean  @default(true) @map("is_active")
+
+  type TransactionType
+
+  object   Object? @relation(fields: [objectId], references: [id], onDelete: SetNull)
+  objectId Int?    @map("object_id")
+
+  attachments Attachment[]
+
+  organization                Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  organizationId              Int?          @map("organization_id")
+  usedFromOrganizationBalance Boolean       @default(false) @map("used_from_organization_balance")
+
+  branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  branchId Int?    @map("branch_id")
+
+  salaryPayment SalaryPayment? @relation("salary_payment_transaction")
+
+  items TransactionItem[]
+
+  executedBy   User? @relation("txn_executed_by", fields: [executedById], references: [id], onDelete: SetNull)
+  executedById Int?  @map("executed_by_id")
+  createdBy    User? @relation("txn_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById  Int?  @map("created_by_id")
+  deletedBy    User? @relation("txn_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById  Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model TransactionItem {
+  id           Int      @id @default(autoincrement())
+  name         String?
+  parameter    String?
+  quantity     Decimal? @db.Decimal(18, 3)
+  pricePerUnit BigInt?  @map("price_per_unit")
+  totalPrice   BigInt?
+  isActive     Boolean  @default(true) @map("is_active")
+
+  unit Unit?
+
+  transaction   Transaction? @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId Int?         @map("transaction_id")
+
+  inventoryHistory InventoryHistory? @relation("TransactionItemHistory")
+
+  createdBy   User? @relation("txn_item_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?
+  deletedBy   User? @relation("txn_item_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model Attachment {
+  id           Int     @id @default(autoincrement())
+  originalname String?
+  filename     String?
+  mimeType     String?
+  filesize     Int?
+  url          String
+  checksum     String?
+  isActive     Boolean @default(true) @map("is_active")
+
+  object   Object? @relation(fields: [objectId], references: [id], onDelete: Cascade)
+  objectId Int?    @map("object_id")
+
+  transaction   Transaction? @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId Int?         @map("transaction_id")
+
+  task   Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId Int?  @map("task_id")
+
+  taskHistory   TaskHistory? @relation(fields: [taskHistoryId], references: [id], onDelete: Cascade)
+  taskHistoryId Int?
+
+  inventory   Inventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  inventoryId Int?       @map("inventory_id")
+
+  inventoryHistory   InventoryHistory? @relation(fields: [inventoryHistoryId], references: [id], onDelete: Cascade)
+  inventoryHistoryId Int?              @map("inventory_history_id")
+
+  invoice               Entry? @relation("invoice_file", fields: [invoiceEntryId], references: [id], onDelete: Cascade)
+  invoiceEntryId        Int?   @map("invoice_entry_id")
+  bankAcceptence        Entry? @relation("bank_acceptance_file", fields: [bankAcceptanceEntryId], references: [id], onDelete: Cascade)
+  bankAcceptanceEntryId Int?   @map("bank_acceptance_entry_id")
+
+  lot                Lot?     @relation(fields: [lotId], references: [id], onDelete: Cascade)
+  lotId              Int?     @map("lot_id")
+  lotTask            LotTask? @relation("lot_task_files", fields: [lotTaskId], references: [id], onDelete: Cascade)
+  lotTaskId          Int?
+  lotTaskComplated   LotTask? @relation("lot_task_complated_files", fields: [lotTaskComplatedId], references: [id], onDelete: Cascade)
+  lotTaskComplatedId Int?
+
+  catalogDirection   CatalogDirection? @relation(fields: [catalogDirectionId], references: [id], onDelete: Cascade)
+  catalogDirectionId Int?              @map("catalog_direction_id")
+  catalog            Catalog?          @relation("catalog_gallery", fields: [catalogId], references: [id], onDelete: Cascade)
+  catalogId          Int?              @map("catalog_id")
+  previewCatalog     Catalog?          @relation("catalog_preview", fields: [previewCatalogId], references: [id], onDelete: Cascade)
+  previewCatalogId   Int?
+
+  service   Services? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId Int?      @map("service_id")
+
+  previewImageNews   News? @relation("news_preview_image", fields: [previewImageNewsId], references: [id], onDelete: Cascade)
+  previewImageNewsId Int?
+  imageNews          News? @relation("news_images", fields: [imageNewsId], references: [id], onDelete: Cascade)
+  imageNewsId        Int?
+
+  previewImageProject   Project? @relation("project_preview_image", fields: [previewImageProjectId], references: [id], onDelete: Cascade)
+  previewImageProjectId Int?
+  imageProject          Project? @relation("project_images", fields: [imageProjectId], references: [id], onDelete: Cascade)
+  imageProjectId        Int?
+
+  techs   Techs? @relation("techs_image", fields: [techsId], references: [id], onDelete: Cascade)
+  techsId Int?   @map("techs_id")
+
+  gallery   Gallery? @relation("gallery_image", fields: [galleryId], references: [id], onDelete: Cascade)
+  galleryId Int?     @map("gallery_id")
+
+  partner   Partners? @relation("partner_image", fields: [partnerId], references: [id], onDelete: Cascade)
+  partnerId Int?      @map("partner_id")
+
+  createdBy   User? @relation("attachment_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("attachment_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Task {
+  id                  Int       @id @default(autoincrement())
+  title               String?
+  description         String?
+  durationDays        Int?      @default(1) @map("duration_days")
+  startDate           DateTime  @map("start_date") @db.Timestamptz(6)
+  endDate             DateTime  @map("end_date") @db.Timestamptz(6)
+  progress            Int?
+  productName         String?   @map("product_name")
+  quantity            Decimal?  @db.Decimal(18, 3)
+  quantityOfCompleted Decimal?  @default(0) @map("quantity_of_complated") @db.Decimal(18, 3)
+  technicalParameters String?   @map("technical_parameters")
+  pricePerUnit        BigInt?   @map("price_per_unit")
+  totalPrice          BigInt?   @map("total_price")
+  checked             Boolean   @default(false)
+  version             Int       @default(0)
+  isActive            Boolean   @default(true) @map("is_active")
+  isOfficeTask        Boolean   @default(false) @map("is_office_task")
+  deliveryAddress     String?   @map("delivery_address")
+  contractNumber      String?   @map("contract_number")
+  contractDate        DateTime? @map("contract_date") @db.Timestamptz(6)
+
+  unit     Unit?
+  priority TaskPriority?
+  status   TaskStatus    @default(PENDING)
+
+  assigned TaskAssignment[]
+
+  comments TaskComment[]
+
+  attachments Attachment[]
+
+  parent   Task?  @relation("SubTasks", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId Int?   @map("parent_id")
+  subtasks Task[] @relation("SubTasks")
+
+  object   Object? @relation(fields: [objectId], references: [id], onDelete: SetNull)
+  objectId Int?    @map("object_id")
+
+  organizationId Int?          @map("organization_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  clientId Int?          @map("client_id")
+  client   Organization? @relation("task_client_organization", fields: [clientId], references: [id], onDelete: SetNull)
+
+  history TaskHistory[]
+
+  createdBy     User? @relation("created_task", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById   Int?  @map("created_by_id")
+  completedBy   User? @relation("task_complated_by", fields: [completedById], references: [id], onDelete: SetNull)
+  completedById Int?  @map("complated_by_id")
+  deletedById   Int?  @map("deleted_by_id")
+  deletedBy     User? @relation("task_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model TaskHistory {
+  id                  Int      @id @default(autoincrement())
+  quantityOfCompleted Decimal? @map("quatnity_of_complated") @db.Decimal(18, 3)
+  description         String?
+  isActive            Boolean  @default(true) @map("is_active")
+
+  task   Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId Int?  @map("task_id")
+
+  attachments Attachment[]
+
+  createdBy   User? @relation("task_history_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("task_history_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model TaskAssignment {
+  id Int @id @default(autoincrement())
+
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int?  @map("user_id")
+
+  task   Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId Int?  @map("task_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  CHECKING
+  COMPLETED_PARTIALLY
+  COMPLETED
+  LATE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model TaskComment {
+  id       Int     @id @default(autoincrement())
+  message  String
+  isActive Boolean @default(true) @map("is_active")
+
+  taskId Int?  @map("task_id")
+  task   Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  worker      User? @relation("comments_to_user", fields: [workerId], references: [id], onDelete: SetNull)
+  workerId    Int?  @map("worker_id")
+  createdBy   User? @relation("task_comment_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("task_comment_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Debt {
+  id                Int     @id @default(autoincrement())
+  counterpartyName  String?
+  counterpartyPhone String? @db.VarChar(20)
+
+  isDollar        Boolean @default(false) @map("is_dollar")
+  totalAmount     BigInt  @default(0) @map("total_amount")
+  paidAmount      BigInt  @default(0)
+  remainingAmount BigInt  @default(0) @map("remaining_amount")
+
+  issuedAt DateTime @map("issued_at") @db.Timestamptz(6)
+  dueAt    DateTime @map("due_at") @db.Timestamptz(6)
+  note     String?
+  version  Int      @default(0)
+
+  smsBefore  Boolean @default(false) @map("sms_before")
+  smsLate    Boolean @default(false) @map("sms_late")
+  callBefore Boolean @default(false) @map("call_before")
+  callLate   Boolean @default(false) @map("call_late")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  counterPartyType CounterPartyType
+  status           DebtStatus       @default(OPEN)
+  type             DebtType         @default(LENT)
+
+  transactions DebtTransaction[]
+
+  items    DebtItem[]
+  payments DebtPayment[]
+
+  auditLogs DebtAuditLog[]
+
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId Int?          @map("organization_id")
+
+  createdBy   User? @relation("debt_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?
+  deletedBy   User? @relation("debt_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@index([status])
+  @@index([dueAt])
+  @@index([isActive])
+  @@index([counterPartyType])
+}
+
+model DebtTransaction {
+  id Int @id @default(autoincrement())
+
+  type        DebtTransactionType
+  amount      BigInt
+  description String?
+
+  debt   Debt @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  debtId Int  @map("debt_id")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  createdBy   User? @relation("debt_txn_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?
+  deletedBy   User? @relation("debt_txn_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@index([debtId])
+  @@index([type])
+  @@index([isActive])
+}
+
+enum DebtTransactionType {
+  ADDED
+  PAID
+}
+
+model DebtItem {
+  id Int @id @default(autoincrement())
+
+  name         String
+  parameter    String?
+  quantity     Decimal @db.Decimal(18, 3)
+  pricePerUnit BigInt  @map("price_per_unit")
+  totalPrice   BigInt  @map("total_price")
+  paidAmount   BigInt  @default(0) @map("paid_amount")
+  recipient    String?
+  unit         Unit?
+
+  debt   Debt @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  debtId Int  @map("debt_id")
+
+  payments DebtPayment[]
+
+  createdBy   User? @relation("debt_item_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?
+  deletedBy   User? @relation("debt_item_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?
+
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@index([debtId])
+  @@index([isActive])
+}
+
+model DebtPayment {
+  id Int @id @default(autoincrement())
+
+  amount      BigInt
+  description String?
+
+  debt   Debt @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  debtId Int  @map("debt_id")
+
+  item   DebtItem? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  itemId Int?      @map("item_id")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  createdBy   User? @relation("debt_payment_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?
+  deletedBy   User? @relation("debt_payment_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@index([debtId])
+  @@index([itemId])
+  @@index([isActive])
+}
+
+model DebtAuditLog {
+  id Int @id @default(autoincrement())
+
+  action     DebtAuditAction
+  entityType String // "DEBT", "TRANSACTION", "ITEM", "PAYMENT"
+  entityId   Int?
+
+  previousData Json? @map("previous_data")
+  newData      Json? @map("new_data")
+
+  performedBy   User? @relation("debt_audit_log_performed_by", fields: [performedById], references: [id], onDelete: SetNull)
+  performedById Int?  @map("performed_by_id")
+
+  debt   Debt @relation(fields: [debtId], references: [id], onDelete: Cascade)
+  debtId Int  @map("debt_id")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([debtId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+enum DebtAuditAction {
+  DEBT_CREATED
+  DEBT_UPDATED
+  DEBT_DELETED
+  DEBT_RESTORED
+  TRANSACTION_ADDED
+  TRANSACTION_UPDATED
+  TRANSACTION_DELETED
+  ITEM_ADDED
+  ITEM_UPDATED
+  ITEM_DELETED
+  PAYMENT_ADDED
+  PAYMENT_UPDATED
+  PAYMENT_DELETED
+}
+
+enum CounterPartyType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum DebtType {
+  BORROWED
+  LENT
+}
+
+enum DebtStatus {
+  OPEN
+  PARTIAL
+  CLOSED
+  OVERDUE
+  OVERPAID
+}
+
+enum DebtHistoryType {
+  ADDED
+  PAID
+}
+
+model SalaryMonth {
+  id               Int       @id @default(autoincrement())
+  day              Int?
+  month            Int?
+  year             Int?
+  startDate        DateTime? @map("start_date") @db.Timestamptz(6)
+  endDate          DateTime? @map("end_date") @db.Timestamptz(6)
+  duties           String?
+  negotiation      String?
+  baseSalary       BigInt
+  totalPaid        BigInt    @default(0)
+  totalAdvance     BigInt    @default(0) @map("total_advance")
+  totalPenalty     BigInt    @default(0) @map("total_penalty")
+  carryOverFrom    BigInt    @default(0) @map("carry_over_from")
+  carryOverToNext  BigInt    @default(0) @map("carry_over_to_next")
+  paidPercent      Int       @default(0)
+  remainingPercent Int       @default(100)
+  version          Int       @default(0)
+  nameObject       String?   @map("name_object")
+  budgetObject     BigInt?   @map("budget_object")
+  isActive         Boolean   @default(true) @map("is_active")
+
+  type            SalaryMonthType?
+  status          SalaryStatus           @default(UNPAID)
+  appliedPayments SalaryAppliedPayment[]
+
+  object   Object? @relation(fields: [objectId], references: [id], onDelete: SetNull)
+  objectId Int?    @map("object_id")
+
+  owner       User? @relation("user_salary_month", fields: [ownerId], references: [id], onDelete: SetNull)
+  ownerId     Int?  @map("owner_id")
+  createdBy   User? @relation("salary_month_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by")
+  deletedBy   User? @relation("salary_month_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum SalaryMonthType {
+  DAILY
+  MONTHLY
+  COMMISSION
+}
+
+enum SalaryStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+  LATE
+}
+
+model SalaryPayment {
+  id          Int     @id @default(autoincrement())
+  amount      BigInt
+  remaining   BigInt  @default(0)
+  description String?
+  isClosed    Boolean @default(false)
+  isActive    Boolean @default(true) @map("is_active")
+
+  type PaymentType
+
+  transactionId Int?                   @unique @map("transaction_id")
+  transaction   Transaction?           @relation("salary_payment_transaction", fields: [transactionId], references: [id], onDelete: Cascade)
+  appliedMonths SalaryAppliedPayment[]
+  paymentMethod PaymentMethod?         @map("payment_method")
+
+  owner       User? @relation("user_salary_payment", fields: [ownerId], references: [id], onDelete: SetNull)
+  ownerId     Int?  @map("owner_id")
+  createdBy   User? @relation("salary_payment_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("salary_payment_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+}
+
+model SalaryAppliedPayment {
+  id              Int           @id @default(autoincrement())
+  salaryMonthId   Int           @map("salary_month_id")
+  salaryPaymentId Int           @map("salary_payment_id")
+  amountApplied   BigInt        @map("amount_applied")
+  isActive        Boolean       @default(true) @map("is_active")
+  salaryMonth     SalaryMonth   @relation(fields: [salaryMonthId], references: [id], onDelete: Cascade)
+  salaryPayment   SalaryPayment @relation(fields: [salaryPaymentId], references: [id], onDelete: Cascade)
+}
+
+enum PaymentType {
+  AVANS
+  PENALTY
+  SALARY
+}
+
+model Warehouse {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  isActive Boolean @default(true) @map("is_active")
+
+  inventories Inventory[]
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Inventory {
+  id           Int     @id @default(autoincrement())
+  name         String
+  quantity     Decimal @default(0) @db.Decimal(18, 3)
+  sku          String?
+  parameter    String?
+  pricePerUnit BigInt  @default(0) @map("price_per_unit")
+  totalPrice   BigInt  @default(0) @map("total_price")
+  totalInput   Decimal @default(0) @map("total_input") @db.Decimal(18, 3)
+  totalOutput  Decimal @default(0) @map("total_output") @db.Decimal(18, 3)
+  version      Int     @default(0)
+  isReusable   Boolean @default(false) @map("is_reusable")
+  isActive     Boolean @default(true) @map("is_active")
+
+  unit Unit
+
+  warehouseId Int?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+
+  history InventoryHistory[]
+
+  avatars Attachment[]
+
+  createdById Int?  @map("created_by_id")
+  createdBy   User? @relation("inventory_created_by", fields: [createdById], references: [id])
+  deletedById Int?  @map("deleted_by_id")
+  deletedBy   User? @relation("inventory_deleted_by", fields: [deletedById], references: [id])
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model InventoryHistory {
+  id           Int     @id @default(autoincrement())
+  description  String?
+  quantity     Decimal @db.Decimal(18, 3)
+  pricePerUnit BigInt  @default(0) @map("price_per_unit")
+  totalPrice   BigInt  @default(0) @map("total_price")
+  isActive     Boolean @default(true) @map("is_active")
+
+  type InventoryHistoryType
+
+  inventory   Inventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  inventoryId Int?       @map("inventary_id")
+
+  object   Object? @relation(fields: [objectId], references: [id], onDelete: SetNull)
+  objectId Int?    @map("object_id")
+
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  organizationId Int?          @map("organization_id")
+
+  branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  branchId Int?    @map("branch_id")
+
+  transactionItem   TransactionItem? @relation("TransactionItemHistory", fields: [transactionItemId], references: [id], onDelete: Cascade)
+  transactionItemId Int?             @unique @map("transaction_item_id")
+
+  attachments Attachment[]
+
+  executedBy   User? @relation("inventory_history_executed_by", fields: [executedById], references: [id])
+  executedById Int?  @map("executed_by_id")
+  createdBy    User? @relation("inventory_history_created_by", fields: [createdById], references: [id])
+  createdById  Int?  @map("created_by_id")
+  deletedBy    User? @relation("inventory_history_deleted_by", fields: [deletedById], references: [id])
+  deletedById  Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum InventoryHistoryType {
+  INPUT
+  OUTPUT
+}
+
+model Branch {
+  id       Int     @id @default(autoincrement())
+  name     String
+  stir     String
+  isActive Boolean @default(true) @map("is_active")
+
+  balance      BigInt @default(0)
+  totalExpense BigInt @default(0) @map("total_expense")
+  totalIncome  BigInt @default(0) @map("totla_income")
+  version      Int    @default(0)
+
+  entries Entry[]
+
+  inventoryHistories InventoryHistory[]
+
+  transactions Transaction[]
+
+  createdBy   User? @relation("branch_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("branch_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Entry {
+  id             Int        @id @default(autoincrement())
+  contractNumber String?    @map("contract_number")
+  innStir        String?    @map("inn_stir")
+  date           DateTime   @default(now()) @db.Timestamptz(6)
+  contractDate   DateTime?  @map("contract_date") @db.Timestamptz(6)
+  lot            String?
+  purpose        String?
+  amount         BigInt
+  contractAmount BigInt?    @map("contract_amount")
+  poaNumber      String?    @map("poa_number")
+  ownerPhone     String?    @map("owner_phone")
+  isActive       Boolean    @default(true) @map("is_active")
+  color          EntryColor
+  type           EntryType
+  isCardPayout   Boolean    @default(false) @map("is_card_payout")
+
+  branchId Int?    @map("branch_id")
+  branch   Branch? @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  invoiceStatus       InvoiceStatus
+  description         String?
+  invoiceFiles        Attachment[]  @relation("invoice_file")
+  bankAcceptanceFiles Attachment[]  @relation("bank_acceptance_file")
+
+  organizationId Int?          @map("organization_id")
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+
+  createdBy   User? @relation("entry_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("entry_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum EntryType {
+  EXPENSE
+  INCOME
+}
+
+enum EntryColor {
+  GREEN
+  ORANGE
+  YELLOW
+  RED
+  BLUE
+  DARK
+  LIGHT
+  PURPLE
+  PINK
+  BROWN
+  ROSE
+  TEAL
+}
+
+enum InvoiceStatus {
+  NO_INVOICE
+  NOT_CLOSED
+  CLOSED
+  LATE
+}
+
+model Catalog {
+  id        Int     @id @default(autoincrement())
+  titleUz   String? @map("title_uz")
+  titleRu   String? @map("title_ru")
+  titleEn   String? @map("title_en")
+  sku       String?
+  price     BigInt?
+  parameter String?
+  descUz    String? @map("desc_uz")
+  descRu    String? @map("desc_ru")
+  descEn    String? @map("desc_en")
+  isVisible Boolean @default(false) @map("is_visible")
+  isActive  Boolean @default(true) @map("is_active")
+
+  attachments  Attachment[] @relation("catalog_gallery")
+  previewImage Attachment[] @relation("catalog_preview")
+
+  items CatalogItem[]
+
+  direction   CatalogDirection? @relation(fields: [directionId], references: [id], onDelete: SetNull)
+  directionId Int?              @map("direction_id")
+
+  inboxes Inbox[]
+
+  createdBy   User? @relation("catalog_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("catalog_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model CatalogItem {
+  id         Int      @id @default(autoincrement())
+  quantity   Decimal? @db.Decimal(18, 3)
+  totalPrice BigInt?
+  isActive   Boolean  @default(true) @map("is_active")
+
+  catalog   Catalog @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+  catalogId Int     @map("catalog_id")
+
+  material   CatalogMaterial @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  materialId Int             @map("material_id")
+
+  createdBy   User? @relation("catalog_item_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("catalog_item_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model CatalogMaterial {
+  id           Int     @id @default(autoincrement())
+  name         String?
+  parameter    String?
+  pricePerUnit BigInt? @map("price_per_unit")
+  isActive     Boolean @default(true) @map("is_active")
+
+  unit Unit?
+
+  catalogItems CatalogItem[]
+
+  createdBy   User? @relation("catalog_material_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("catalog_material_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model CatalogDirection {
+  id       Int     @id @default(autoincrement())
+  titleUz  String? @map("title_uz")
+  titleRu  String? @map("title_ru")
+  titleEn  String? @map("title_en")
+  isActive Boolean @default(true) @map("is_active")
+
+  catalogs Catalog[]
+
+  image Attachment[]
+
+  createdBy   User? @relation("catalog_direction_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("catalog_direction_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Services {
+  id            Int     @id @default(autoincrement())
+  titleUz       String  @map("title_uz")
+  titleRu       String  @map("title_ru")
+  titleEn       String  @map("title_en")
+  descriptionUz String  @map("description_uz")
+  descriptionRu String  @map("description_ru")
+  descriptionEn String  @map("description_en")
+  sortOrder     Int     @default(0) @map("sort_order")
+  isActive      Boolean @default(true) @map("is_active")
+
+  image Attachment[]
+
+  sections ServiceSection[]
+
+  projects Project[]
+
+  createdBy   User? @relation("service_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("service_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  inboxes   Inbox[]
+}
+
+model ServiceSection {
+  id        Int    @id @default(autoincrement())
+  titleUz   String
+  titleRu   String
+  titleEn   String
+  content   Json
+  sortOrder Int    @default(0) @map("sort_order")
+
+  service   Services @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId Int
+}
+
+model News {
+  id            Int      @id @default(autoincrement())
+  titleUz       String   @map("title_uz")
+  titleRu       String   @map("title_ru")
+  titleEn       String   @map("title_en")
+  descriptionUz String   @map("description_uz")
+  descriptionRu String   @map("description_ru")
+  descriptionEn String   @map("description_en")
+  textUz        String   @map("text_uz")
+  textRu        String   @map("text_ru")
+  textEn        String   @map("text_en")
+  date          DateTime @db.Timestamptz(6)
+  isActive      Boolean  @default(true) @map("is_active")
+
+  previewImage Attachment[] @relation("news_preview_image")
+  images       Attachment[] @relation("news_images")
+
+  createdBy   User? @relation("news_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("news_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Project {
+  id            Int      @id @default(autoincrement())
+  titleUz       String   @map("title_uz")
+  titleRu       String   @map("title_ru")
+  titleEn       String   @map("title_en")
+  descriptionUz String   @map("description_uz")
+  descriptionRu String   @map("description_ru")
+  descriptionEn String   @map("description_en")
+  location      String?
+  date          DateTime @db.Timestamptz(6)
+  isActive      Boolean  @default(true) @map("is_active")
+
+  previewImage Attachment[] @relation("project_preview_image")
+  images       Attachment[] @relation("project_images")
+
+  service   Services? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceId Int?      @map("service_id")
+
+  createdBy   User? @relation("project_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("project_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Techs {
+  id       Int     @id @default(autoincrement())
+  titleUz  String  @map("title_uz")
+  titleRu  String  @map("title_ru")
+  titleEn  String  @map("title_en")
+  isActive Boolean @default(true) @map("is_active")
+
+  image Attachment[] @relation("techs_image")
+
+  createdBy   User? @relation("techs_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("techs_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Gallery {
+  id       Int     @id @default(autoincrement())
+  isActive Boolean @default(true) @map("is_active")
+
+  image Attachment[] @relation("gallery_image")
+
+  createdBy   User? @relation("gallery_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("gallery_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Partners {
+  id        Int     @id @default(autoincrement())
+  title     String
+  sortOrder Int     @default(0) @map("sort_order")
+  isActive  Boolean @default(true) @map("is_active")
+
+  image Attachment[] @relation("partner_image")
+
+  createdBy   User? @relation("partber_created_by", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById Int?  @map("created_by_id")
+  deletedBy   User? @relation("partber_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+model Inbox {
+  id       Int     @id @default(autoincrement())
+  message  String?
+  phone    String
+  name     String
+  company  String?
+  isActive Boolean @default(true)
+
+  type InboxType @default(CONTACT)
+
+  status InboxStatus @default(PENDING)
+
+  service   Services? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  serviceId Int?
+
+  catalog   Catalog? @relation(fields: [catalogId], references: [id], onDelete: SetNull)
+  catalogId Int?
+
+  readUsers User[]
+
+  deletedBy   User? @relation("inbox_deleted_by", fields: [deletedById], references: [id], onDelete: SetNull)
+  deletedById Int?  @map("deleted_by_id")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+}
+
+enum InboxType {
+  ORDER_PRODUCT
+  ORDER_SERVICE
+  CONTACT
+}
+
+enum InboxStatus {
+  PENDING
+  WORKING
+  COMPLETED
+  CANCELED
+}
+
+model CallEvent {
+  id       Int     @id @default(autoincrement())
+  isActive Boolean @default(true)
+
+  type CallEventType
+
+  userId Int  @map("user_id")
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+}
+
+enum CallEventType {
+  NEW_TASK
+  NEW_INBOX
+}

@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "public"."SalaryMonth" ALTER COLUMN "baseSalary" SET DATA TYPE BIGINT,
+ALTER COLUMN "totalPaid" SET DATA TYPE BIGINT,
+ALTER COLUMN "total_advance" SET DATA TYPE BIGINT,
+ALTER COLUMN "total_penalty" SET DATA TYPE BIGINT,
+ALTER COLUMN "carry_over_from" SET DATA TYPE BIGINT,
+ALTER COLUMN "carry_over_to_next" SET DATA TYPE BIGINT;
