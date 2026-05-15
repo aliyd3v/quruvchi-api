@@ -1,5 +1,6 @@
 const { undefinedRouteController } = require("./controllers/undefinedRoute.controller");
 const { globalErrorHandler } = require("./middlewares/globalErrorHandler");
+const { userRouter } = require("./modules/user/user.routes");
 const { answerToWorkVolumeRouter } = require("./routes/answerToWorkVolume.routes");
 const { attachmentRouter } = require("./routes/attachment.routes");
 const { authRouter } = require("./routes/auth.routes");
@@ -19,7 +20,6 @@ const { profileRouter } = require("./routes/profile.routes");
 const { salaryRouter } = require("./routes/salary.routes");
 const { taskRouter } = require("./routes/task.routes");
 const { transactionRouter } = require("./routes/transaction.routes");
-const { userRouter } = require("./routes/user.routes");
 const { warehouseRouter } = require("./routes/warehouse.routes");
 const { workVolumeRouter } = require("./routes/workVolume.routes");
 

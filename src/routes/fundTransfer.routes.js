@@ -1,7 +1,7 @@
 const fundTransferController = require("../controllers/fundTransfer.controller");
 const { Role } = require("../generated/prisma");
-const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
-const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
+const { checkRole } = require("../middlewares/checkRole");
+const { checkToken } = require("../middlewares/checkToken");
 const { createFundToFundValidatorMiddleware } = require("../middlewares/validators/fundTransfer/createFundToFundValidatorMiddleware");
 const { createFundToObjectValidatorMiddleware } = require("../middlewares/validators/fundTransfer/createFundToObjectValidatorMiddleware");
 const { createObjectToFundValidatorMiddleware } = require("../middlewares/validators/fundTransfer/createObjectToFundValidatorMiddleware");
@@ -13,7 +13,7 @@ const { updateTransferValidatorMiddleware } = require("../middlewares/validators
 const fundTransferRouter = require("express").Router();
 
 fundTransferRouter
-  .use(checkTokenMiddleware)
+  .use(checkToken)
   .post("/user-to-user", createFundToFundValidatorMiddleware, fundTransferController.createUserToUser)
   .post("/user-to-object", createFundToObjectValidatorMiddleware, fundTransferController.createUserToObject)
   .post("/object-to-user", createObjectToFundValidatorMiddleware, fundTransferController.createObjectToUser)
@@ -24,7 +24,7 @@ fundTransferRouter
   .patch("/trash/:id", fundTransferController.restoreOne)
   .delete("/trash/:id", fundTransferController.absoluteDelete)
   .get("/user-transfers", fundTransferController.getUserTransfers)
-  .put("/:id", checkRoleMiddleware(Role.SUPERADMIN), updateTransferValidatorMiddleware, fundTransferController.updateOneTransfer)
+  .put("/:id", checkRole(Role.SUPERADMIN), updateTransferValidatorMiddleware, fundTransferController.updateOneTransfer)
   .delete("/:id", fundTransferController.deleteOneTransfer);
 
 module.exports = { fundTransferRouter };

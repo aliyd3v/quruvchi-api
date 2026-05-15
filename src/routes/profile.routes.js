@@ -1,9 +1,9 @@
 const profileController = require("../controllers/profile.controller");
-const Permissions = require("../constants/PermissionEnum");
+const Permissions = require("../constants/permission");
 const { Role } = require("../generated/prisma");
-const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
-const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
-const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
+const { checkPermission } = require("../middlewares/checkPermission");
+const { checkRole } = require("../middlewares/checkRole");
+const { checkToken } = require("../middlewares/checkToken");
 const { passwordUpdateValidatorMiddleware } = require("../middlewares/validators/profile/passwordUpdateValidator");
 const { profilePhoneUpdateValidatorMiddleware } = require("../middlewares/validators/profile/profilePhoneUpdateValidatorMiddleware");
 const { profileUpdateValidatorMiddleware } = require("../middlewares/validators/profile/profileUpdateValidatorMiddleware");
@@ -11,10 +11,10 @@ const { profileUpdateValidatorMiddleware } = require("../middlewares/validators/
 const profileRouter = require("express").Router();
 
 profileRouter
-  .get("/", checkTokenMiddleware, profileController.getProfile)
-  .put("/change", checkTokenMiddleware, checkPermissionMiddleware(Permissions.update_profile), profileUpdateValidatorMiddleware, profileController.updateProfile)
-  .patch("/change/phone", checkTokenMiddleware, checkRoleMiddleware(Role.SUPERADMIN), profilePhoneUpdateValidatorMiddleware, profileController.updateProfilePhone)
-  .patch("/change/password", checkTokenMiddleware, checkPermissionMiddleware(Permissions.update_password), passwordUpdateValidatorMiddleware, profileController.udpatePassword)
+  .get("/", checkToken, profileController.getProfile)
+  .put("/change", checkToken, checkPermission(Permissions.update_profile), profileUpdateValidatorMiddleware, profileController.updateProfile)
+  .patch("/change/phone", checkToken, checkRole(Role.SUPERADMIN), profilePhoneUpdateValidatorMiddleware, profileController.updateProfilePhone)
+  .patch("/change/password", checkToken, checkPermission(Permissions.update_password), passwordUpdateValidatorMiddleware, profileController.udpatePassword)
   .get("/connect-google", profileController.connectGoogleRedirect)
   .get("/connect-google/callback", profileController.connectGoogleCallBack);
 

@@ -1,9 +1,9 @@
 const entryController = require("../controllers/entry.controller");
-const Permissions = require("../constants/PermissionEnum");
+const Permissions = require("../constants/permission");
 const { Role } = require("../generated/prisma");
-const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
-const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
-const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
+const { checkPermission } = require("../middlewares/checkPermission");
+const { checkRole } = require("../middlewares/checkRole");
+const { checkToken } = require("../middlewares/checkToken");
 const { uploadMultipleFields } = require("../middlewares/uploadToStorageMiddleware");
 const { closeTheInvoiceValidatorMiddleware } = require("../middlewares/validators/entry/closeTheInvoiceValidatorMiddleware");
 const { entryCreateValidatorMiddleware } = require("../middlewares/validators/entry/entryCreateValidatorMiddleware");
@@ -13,8 +13,8 @@ const upload = require("../utils/multer");
 const entryRouter = require("express").Router();
 
 entryRouter
-  .use(checkTokenMiddleware)
-  .use(checkPermissionMiddleware(Permissions.ie_crud))
+  .use(checkToken)
+  .use(checkPermission(Permissions.ie_crud))
   .post(
     "/",
     upload.fields([

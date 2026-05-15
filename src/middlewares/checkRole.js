@@ -1,11 +1,15 @@
 const { Role } = require("../generated/prisma");
 const AppError = require("../utils/AppError");
 
-exports.checkRoleMiddleware = (...Role) => {
+exports.checkRole = (...roles) => {
   return (req, _res, next) => {
-    if (!Role.includes(req.user.role) && req.user.role !== Role.SUPERADMIN) {
+    const hasRole = roles.includes(req.user.role);
+    const isSuperadmin = req.user.role === Role.SUPERADMIN;
+
+    if (!hasRole && !isSuperadmin) {
       return next(new AppError(403, "forbidden"));
     }
+
     next();
   };
 };

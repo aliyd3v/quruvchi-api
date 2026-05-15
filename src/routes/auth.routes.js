@@ -5,7 +5,7 @@ const { requestResetPassValidatorMiddleware } = require("../middlewares/validato
 const { resetPassResendCodeValidatorMiddleware } = require("../middlewares/validators/resetPassword/resetPassResendCodeValidatorMiddleware");
 const { verifyLoginCodeValidatorMiddleware } = require("../middlewares/validators/login/verifyLoginCodeValidatorMiddleware");
 const { verifyResetPassCodeValidatorMiddleware } = require("../middlewares/validators/resetPassword/verifyResetPassCodeValidatorMiddleware");
-const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
+const { checkToken } = require("../middlewares/checkToken");
 const { verify2FASetupVerifyValidatorMiddleware } = require("../middlewares/validators/twoFA/verify2FASetupVerifyValidatorMiddleware");
 
 const authRouter = require("express").Router();
@@ -15,9 +15,9 @@ authRouter
   .post("/2fa/login", verifyLoginCodeValidatorMiddleware, authController.login2FAVerify)
   .get("/google", authController.googleRedirect)
   .get("/callback", authController.googleCallBack)
-  .post("/2fa/setup", checkTokenMiddleware, authController.setup2FA)
-  .post("/2fa/verify-setup", checkTokenMiddleware, verify2FASetupVerifyValidatorMiddleware, authController.verifySetup2FA)
-  .post("/2fa/disable", checkTokenMiddleware, authController.disable2FA)
+  .post("/2fa/setup", checkToken, authController.setup2FA)
+  .post("/2fa/verify-setup", checkToken, verify2FASetupVerifyValidatorMiddleware, authController.verifySetup2FA)
+  .post("/2fa/disable", checkToken, authController.disable2FA)
   .post("/request-reset-password", requestResetPassValidatorMiddleware, authController.requestResetPassword)
   .post("/reset-password-resend-otp", resetPassResendCodeValidatorMiddleware, authController.resetPasswordResendCode)
   .post("/verify-reset-otp", verifyResetPassCodeValidatorMiddleware, authController.verifyResetPasswordCode)

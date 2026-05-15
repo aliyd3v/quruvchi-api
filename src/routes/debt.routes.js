@@ -1,8 +1,8 @@
 const debtController = require("../controllers/debt.controller");
-const { checkRoleMiddleware } = require("../middlewares/checkRoleMiddleware");
-const { checkTokenMiddleware } = require("../middlewares/checkTokenMiddleware");
-const { checkPermissionMiddleware } = require("../middlewares/checkPermissionMiddleware");
-const Permissions = require("../constants/PermissionEnum");
+const { checkRole } = require("../middlewares/checkRole");
+const { checkToken } = require("../middlewares/checkToken");
+const { checkPermission } = require("../middlewares/checkPermission");
+const Permissions = require("../constants/permission");
 const { debtCreateValidatorMiddleware } = require("../middlewares/validators/debt/debtCreateValidatorMiddleware");
 const { debtUpdateValidatorMidlleware } = require("../middlewares/validators/debt/debtUpdateValidatorMidlleware");
 const { transactionCreateValidator, transactionUpdateValidator } = require("../middlewares/validators/debt/transactionValidator");
@@ -12,8 +12,8 @@ const { paymentCreateValidator, paymentUpdateValidator } = require("../middlewar
 const debtRouter = require("express").Router();
 
 debtRouter
-  .use(checkTokenMiddleware)
-  .use(checkPermissionMiddleware(Permissions.debt_crud))
+  .use(checkToken)
+  .use(checkPermission(Permissions.debt_crud))
 
   // ==================== DEBT ====================
   .post("/", debtCreateValidatorMiddleware, debtController.createOne)
