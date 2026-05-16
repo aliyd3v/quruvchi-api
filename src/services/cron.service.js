@@ -8,24 +8,8 @@ const fs = require("fs");
 function selectOrg(stir) {
   if (!stir) return;
   switch (stir) {
-    case "300446084":
-      return "BUILDER_PROJECTS_HOUSE_REMIND_FACTURE";
-    case "307905616":
-      return "BUYUK_ASR_BOSHI_REMIND_FACTURE";
-    case "306467799":
-      return "DEVELOPMENT_FORWARD_PACE_REMIND_FACTURE";
-    case "306878951":
-      return "RSQ_REMIND_FACTURE";
-    case "308198340":
-      return "SHAXRAMBEK_AKROMBEK_REMIND_FACTURE";
-    case "309466884":
-      return "WOODEN_MASTER_EXPERT_REMIND_FACTURE";
-    case "311561910":
-      return "GULOBOD_SITI_REMIND_FACTURE";
-    case "308816022":
-      return "SHOXRUZBEK_MAXSULOTLARI_REMIND_FACTURE";
-    case "310242793":
-      return "UNIERSE_PRODUCTION_AND_BUILDER_REMIND_FACTURE";
+    case "":
+      return "";
   }
 }
 
@@ -228,15 +212,14 @@ class cronService {
   }
 
   async sendOverdueDebtReminderSms() {
-    const debts = await prisma.debt.findMany({
-      where: {
-        isActive: true,
-        smsLate: true,
-        status: { in: ["OVERDUE"] },
-      },
-    });
-
-    const debterPhones = debts.map((d) => d.counterpartyPhone).filter((p) => !!p);
+    // const debts = await prisma.debt.findMany({
+    //   where: {
+    //     isActive: true,
+    //     smsLate: true,
+    //     status: { in: ["OVERDUE"] },
+    //   },
+    // });
+    // const debterPhones = debts.map((d) => d.counterpartyPhone).filter((p) => !!p);
     // await Promise.all(debterPhones.map(async phone => await SMS.send(phone, ``)))
   }
 
@@ -262,7 +245,7 @@ class cronService {
     });
 
     const debterPhones = debts.map((d) => d.counterpartyPhone).filter((phone) => !!phone);
-    await Promise.all(debterPhones.map(async (phone) => await callService.call(phone, "RSQ_DEBT_REMIND")));
+    // await Promise.all(debterPhones.map(async (phone) => await callService.call(phone, "RSQ_DEBT_REMIND")));
   }
 
   async callOverdueDebtors() {
@@ -276,7 +259,7 @@ class cronService {
     });
 
     const debterPhones = debts.map((d) => d.counterpartyPhone).filter((p) => !!p);
-    await Promise.all(debterPhones.map(async (phone) => await callService.call(phone, "RSQ_LATE_DEBT_REMIND")));
+    // await Promise.all(debterPhones.map(async (phone) => await callService.call(phone, "RSQ_LATE_DEBT_REMIND")));
   }
 
   async callLateInvoiceCounterparty() {
@@ -405,39 +388,6 @@ class cronService {
 
     if (phones.length > 0) {
       await Promise.all(phones.map(async (phone) => await callService.call(phone, "NEW_TASK")));
-    }
-  }
-
-  async callForNewInbox() {
-    const phones = [];
-
-    const callEvents = await prisma.callEvent.findMany({
-      where: { isActive: true, type: "NEW_INBOX" },
-      include: {
-        user: true,
-      },
-    });
-
-    const events = callEvents.filter((e) => !!e.user?.isActive);
-
-    if (events.length > 0) {
-      for (const {
-        id,
-        user: { phone },
-      } of events) {
-        if (!phones.includes()) {
-          phones.push(phone);
-        }
-
-        await prisma.callEvent.update({
-          where: { id },
-          data: { isActive: false },
-        });
-      }
-    }
-
-    if (phones.length > 0) {
-      await Promise.all(phones.map(async (phone) => await callService.call(phone, "NEW_INBOX")));
     }
   }
 }
