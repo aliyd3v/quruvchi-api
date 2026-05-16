@@ -48,7 +48,7 @@ async function uploadToStorage(file) {
     await blob.makePublic();
     const url = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
     await fs.promises.unlink(file.path);
-    return { originalname: file.originalname, filename: file.filename, size: file.size, mimeType: file.mimetype, url };
+    return { originalname: file.originalname, filename: file.filename, filesize: file.size, mimeType: file.mimetype, url };
   } catch (error) {
     await fs.promises.unlink(file.path).catch(() => {});
     await blob.delete().catch(() => {});

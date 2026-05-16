@@ -8,7 +8,7 @@ class Storage {
     try {
       await imageConverter(file);
 
-      const oldPath = path.join(__dirname, "..", "..", "uploaded", file.filename);
+      const oldPath = path.join(__dirname, "..", "..", "uploads", file.filename);
       const newPath = path.join(__dirname, "..", "..", "storage", file.filename);
 
       await fs.rename(oldPath, newPath);

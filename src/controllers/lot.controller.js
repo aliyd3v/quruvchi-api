@@ -123,12 +123,8 @@ const lotController = {
       const uploadedFiles = req.uploadedFiles;
 
       const newAttachmentsData = uploadedFiles.map((u) => ({
+        ...u,
         lotId: req.lotId,
-        url: u.url,
-        originalname: u.originalname,
-        filename: u.filename,
-        mimeType: u.mimeType,
-        filesize: u.size,
         createdById: req.user.id,
       }));
 
@@ -836,12 +832,8 @@ const lotController = {
       const uploadedFiles = req.uploadedFiles;
 
       const newAttachmentsData = uploadedFiles.map((u) => ({
+        ...u,
         lotTaskId: req.lotTaskId,
-        url: u.url,
-        originalname: u.originalname,
-        filename: u.filename,
-        mimeType: u.mimeType,
-        filesize: u.size,
         createdById: req.user.id,
       }));
 
@@ -941,12 +933,8 @@ const lotController = {
       const uploadedFiles = req.uploadedFiles;
 
       const newAttachmentsData = uploadedFiles.map((u) => ({
+        ...u,
         lotTaskComplatedId: req.lotTaskComplatedId,
-        url: u.url,
-        originalname: u.originalname,
-        filename: u.filename,
-        mimeType: u.mimeType,
-        filesize: u.size,
         createdById: req.user.id,
       }));
 

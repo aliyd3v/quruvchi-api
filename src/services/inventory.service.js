@@ -42,12 +42,8 @@ class inventoryService {
           await prisma.attachment.createMany({
             data: uploadedFiles.map((u) => {
               return {
+                ...u,
                 inventoryId: newInventory.id,
-                url: u.url,
-                originalname: u.originalname,
-                filename: u.filename,
-                mimeType: u.mimeType,
-                filesize: u.size,
                 createdById,
               };
             }),
@@ -1112,12 +1108,8 @@ class inventoryService {
           if (uploadedFiles.length) {
             await tx.attachment.createMany({
               data: uploadedFiles.map((u) => ({
+                ...u,
                 inventoryHistoryId: newInventoryHistory.id,
-                url: u.url,
-                originalname: u.originalname,
-                filename: u.filename,
-                mimeType: u.mimeType,
-                filesize: u.size,
                 createdById,
               })),
             });

@@ -29,11 +29,7 @@ class catalogService {
         if (uploaded) {
           await prisma.attachment.create({
             data: {
-              originalname: uploaded.originalname,
-              filesize: uploaded.size,
-              filename: uploaded.filename,
-              mimeType: uploaded.mimeType,
-              url: uploaded.url,
+              ...uploaded,
               catalogDirectionId: direction.id,
             },
           });
@@ -254,11 +250,7 @@ class catalogService {
 
           await tx.attachment.create({
             data: {
-              filename: uploaded.filename,
-              mimeType: uploaded.mimeType,
-              originalname: uploaded.originalname,
-              filesize: uploaded.size,
-              url: uploaded.url,
+              ...uploaded,
               catalogDirectionId: id,
               createdById,
             },
@@ -545,11 +537,7 @@ class catalogService {
         if (uploaded) {
           await tx.attachment.create({
             data: {
-              originalname: uploaded.originalname,
-              filename: uploaded.filename,
-              filesize: uploaded.size,
-              mimeType: uploaded.mimeType,
-              url: uploaded.url,
+              ...uploaded,
               previewCatalogId: catalog.id,
               createdById,
             },
@@ -559,11 +547,7 @@ class catalogService {
         if (uploadedFiles.length > 0) {
           await tx.attachment.createMany({
             data: uploadedFiles.map((f) => ({
-              originalname: f.originalname,
-              filename: f.filename,
-              filesize: f.size,
-              mimeType: f.mimeType,
-              url: f.url,
+              ...f,
               catalogId: catalog.id,
               createdById,
             })),
@@ -930,11 +914,7 @@ class catalogService {
 
           await tx.attachment.create({
             data: {
-              originalname: uploadedFile.originalname,
-              filename: uploadedFile.filename,
-              filesize: uploadedFile.size,
-              mimeType: uploadedFile.mimeType,
-              url: uploadedFile.url,
+              ...uploadedFile,
               previewCatalogId: id,
               createdById,
             },
@@ -944,11 +924,7 @@ class catalogService {
         if (uploadedFiles.length > 0) {
           await tx.attachment.createMany({
             data: uploadedFiles.map((i) => ({
-              originalname: i.originalname,
-              filename: i.filename,
-              filesize: i.size,
-              mimeType: i.mimeType,
-              url: i.url,
+              ...i,
               catalogId: id,
               createdById,
             })),

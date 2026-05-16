@@ -47,7 +47,7 @@ const uploadFileToS3 = async (file) => {
     const result = {
       originalname: file.originalname,
       filename: file.filename,
-      size: file.size,
+      filesize: file.size,
       mimeType: file.mimetype,
       url,
     };

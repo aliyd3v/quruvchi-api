@@ -468,12 +468,8 @@ const taskController = {
 
           if (uploaded.length) {
             const attachmentData = uploaded.map((u) => ({
+              ...u,
               taskId: newSubTask.id,
-              url: u.url,
-              originalname: u.originalname,
-              filename: u.filename,
-              mimeType: u.mimeType,
-              filesize: u.size,
               createdById,
             }));
 
@@ -4944,12 +4940,8 @@ const taskController = {
 
       const newAttachmentsData = uploadedFiles.map((u) => {
         return {
+          ...u,
           taskHistoryId: req.taskHistoryId,
-          url: u.url,
-          originalname: u.originalname,
-          filename: u.filename,
-          mimeType: u.mimeType,
-          filesize: u.size,
           createdById: req.user.id,
         };
       });

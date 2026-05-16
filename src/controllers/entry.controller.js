@@ -144,12 +144,8 @@ const entryController = {
       if (uploadedInvoiceFiles?.length > 0) {
         uploadedInvoiceFiles.forEach((u) => {
           newAttachmentsData.push({
+            ...u,
             invoiceEntryId: entryId,
-            url: u.url,
-            originalname: u.originalname,
-            filename: u.filename,
-            mimeType: u.mimeType,
-            filesize: u.size,
             createdById: req.user.id,
           });
         });
@@ -157,12 +153,8 @@ const entryController = {
       if (uploadedBankAcceptanceFiles?.length > 0) {
         uploadedBankAcceptanceFiles.forEach((u) => {
           newAttachmentsData.push({
+            ...u,
             bankAcceptanceEntryId: entryId,
-            url: u.url,
-            originalname: u.originalname,
-            filename: u.filename,
-            mimeType: u.mimeType,
-            filesize: u.size,
             createdById: req.user.id,
           });
         });

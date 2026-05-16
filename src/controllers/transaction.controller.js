@@ -52,12 +52,8 @@ const transactionController = {
       const uploadedFiles = req.uploadedFiles;
 
       const newAttachmentsData = uploadedFiles.map((u) => ({
+        ...u,
         transactionId: req.transactionId,
-        url: u.url,
-        originalname: u.originalname,
-        filename: u.filename,
-        mimeType: u.mimeType,
-        filesize: u.size,
         createdById: req.user.id,
       }));
       if (!newAttachmentsData.length) throw new AppError(400, "files_didnt_upload");

@@ -47,11 +47,7 @@ const attachmentController = {
       const newAttachmentsData = uploadedFiles.map((u) => {
         return {
           [filledKey]: filledValueId,
-          url: u.url,
-          originalname: u.originalname,
-          filename: u.filename,
-          mimeType: u.mimeType,
-          filesize: u.size,
+          ...u,
           createdById: req.user.id,
         };
       });
