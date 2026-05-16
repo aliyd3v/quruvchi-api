@@ -1,10 +1,9 @@
-const { OrganizationStatus } = require("../lib/prisma");
+const { OrganizationStatus } = require("../generated/prisma");
 const ExcelJS = require("exceljs");
 const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
-const { fromMinorUnits } = require("../utils/amount");
 
 const allowedColumnKeys = ["organizationName", "stirNumber", "ownerName", "ownerPhone", "sellerPhone", "status", "createdAt"];
 
@@ -198,7 +197,7 @@ const organizationController = {
       };
 
       const formatNumber = (num) => {
-        return Number(num)/* .toLocaleString("uz-UZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) */;
+        return Number(num) /* .toLocaleString("uz-UZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) */;
       };
 
       const formatBalance = (amount) => {

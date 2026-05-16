@@ -1,12 +1,12 @@
-const { ObjectStatus, WorkType, TransactionType } = require("../lib/prisma");
+const { ObjectStatus, WorkType, TransactionType } = require("../generated/prisma");
 const ExcelJS = require("exceljs");
 const prisma = require("../lib/prisma");
-const { toMajor, toMinor, fromMinorUnits } = require("../utils/amount");
+const { fromMinorUnits } = require("../utils/amount");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
 const { Role } = require("../generated/prisma");
-const { deleteFilesFromS3 } = require("../utils/s3");
+const storage = require("../lib/storage");
 
 const allowedColumnKeys = ["name", "serviceName", "description", "status", "projectType", "workType", "productName", "createdAt", "updatedAt"];
 
@@ -2641,7 +2641,9 @@ const objectController = {
         ...(direction === "COMPLETED" && { status: "COMPLETED" }),
       };
 
-      const count = await prisma.object.count({ where: findWhere });
+      const count = await prisma.object.count({
+        where: findWhere,
+      });
       let totalPage = Math.ceil(count / limit);
       page = !totalPage ? 1 : page > totalPage ? totalPage : page;
 
@@ -2754,7 +2756,9 @@ const objectController = {
       const id = idChecker(req.params.id);
       if (!id) throw new AppError(400, "bad_request");
 
-      const object = await prisma.object.findFirst({ where: { isActive: false, id } });
+      const object = await prisma.object.findFirst({
+        where: { isActive: false, id },
+      });
       if (!object) throw new AppError(404, "object_not_found");
 
       await prisma.object.update({
@@ -2779,11 +2783,18 @@ const objectController = {
       const id = idChecker(req.params.id);
       if (!id) throw new AppError(400, "bad_request");
 
-      const object = await prisma.object.findFirst({ where: { id, isActive: false }, include: { attachments: true } });
+      const object = await prisma.object.findFirst({
+        where: { id, isActive: false },
+        include: { attachments: true },
+      });
       if (!object) throw new AppError(404, "object_not_found");
 
-      await prisma.object.delete({ where: { id } });
-      if (object.attachments.length) await deleteFilesFromS3(object.attachments.map((f) => f.filename));
+      await prisma.object.delete({
+        where: { id },
+      });
+      if (object.attachments.length) {
+        await storage.deleteMany(object.attachments.map((f) => f.filename));
+      }
 
       res.status(200).json({
         status: "success",

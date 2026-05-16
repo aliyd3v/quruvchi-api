@@ -9,10 +9,6 @@ const fileController = {
       const key = req.params.key;
       if (!key) throw new AppError(400, "bad_request");
 
-      // const file = await fileService.getByKey(key);
-      // res.setHeader("Content-Type", file.ContentType);
-      // file.Body.pipe(res);
-
       const p = path.join(__dirname, "..", "..", "storage", key);
 
       try {

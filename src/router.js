@@ -15,7 +15,6 @@ const { inventoryRouter } = require("./routes/inventory.routes");
 const { lotRouter } = require("./routes/lot.routes");
 const { objectRouter } = require("./routes/object.routes");
 const { organizationRouter } = require("./routes/organization.routes");
-const { permissionRouter } = require("./routes/permission.routes");
 const { profileRouter } = require("./routes/profile.routes");
 const { salaryRouter } = require("./routes/salary.routes");
 const { taskRouter } = require("./routes/task.routes");
@@ -40,7 +39,6 @@ const Router = (app) => {
     .use("/api/lots", lotRouter)
     .use("/api/objects", objectRouter)
     .use("/api/organizations", organizationRouter)
-    .use("/api/permissions", permissionRouter)
     .use("/api/profile", profileRouter)
     .use("/api/salaries", salaryRouter)
     .use("/api/tasks", taskRouter)

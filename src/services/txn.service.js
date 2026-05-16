@@ -1,7 +1,7 @@
 const { Role } = require("../generated/prisma");
 const balanceService = require("./balance.service");
 const prisma = require("../lib/prisma");
-const { TransactionType, OrganizationStatus } = require("../lib/prisma");
+const { TransactionType, OrganizationStatus } = require("../generated/prisma");
 const AppError = require("../utils/AppError");
 const sleep = require("../utils/sleep");
 const inventoryService = require("./inventory.service");

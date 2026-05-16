@@ -1,4 +1,4 @@
-const { TransactionType } = require("../lib/prisma");
+const { TransactionType } = require("../generated/prisma");
 const AppError = require("../utils/AppError");
 
 class balanceService {

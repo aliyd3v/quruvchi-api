@@ -1,4 +1,4 @@
-const { InventoryHistoryType, Unit } = require("../lib/prisma");
+const { InventoryHistoryType, Unit } = require("../generated/prisma");
 const AppError = require("../utils/AppError");
 const ExcelJS = require("exceljs");
 const prisma = require("../lib/prisma");

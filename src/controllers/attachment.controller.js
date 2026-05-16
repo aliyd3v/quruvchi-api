@@ -4,7 +4,7 @@ const { localErrorHandler } = require("../utils/localErrorHandler");
 const { idChecker } = require("../utils/idChecker");
 const { Role } = require("../generated/prisma");
 const fileService = require("../services/file.service");
-const { deleteFileFromS3 } = require("../utils/s3");
+const storage = require("../lib/storage");
 
 const attachmentController = {
   async checkConnectionModelMiddleware(req, _res, next) {
@@ -102,7 +102,7 @@ const attachmentController = {
         return next(new AppError(404, "attachment_not_found"));
       }
 
-      await deleteFileFromS3(attachment.filename);
+      await storage.delete(attachment.filename);
       await prisma.attachment.delete({ where: { id } });
 
       res.status(200).json({

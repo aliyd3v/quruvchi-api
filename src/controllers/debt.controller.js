@@ -1,4 +1,4 @@
-const { CounterPartyType } = require("../lib/prisma");
+const { CounterPartyType } = require("../generated/prisma");
 const prisma = require("../lib/prisma");
 const debtService = require("../services/debt.service");
 const AppError = require("../utils/AppError");

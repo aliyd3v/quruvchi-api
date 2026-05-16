@@ -6,9 +6,9 @@ const { idChecker } = require("../utils/idChecker");
 const { fromMinorUnits } = require("../utils/amount");
 const fileService = require("../services/file.service");
 const getWeekRange = require("../utils/getWeekRange");
-const { deleteFilesFromS3 } = require("../utils/s3");
 const callService = require("../services/call.service");
 const translations = require("../constants/translation");
+const storage = require("../lib/storage");
 
 const allowedColumnKeys = ["date", "amount", "contractAmount", "createdAt", "updatedAt", "deletedAt"];
 
@@ -664,7 +664,7 @@ const entryController = {
         }
       }
 
-      if (attachments.length) await deleteFilesFromS3(attachments);
+      if (attachments.length) await storage.deleteMany(attachments);
 
       res.status(200).json({
         status: "success",

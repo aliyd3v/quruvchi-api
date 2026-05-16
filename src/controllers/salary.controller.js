@@ -1,4 +1,4 @@
-const { SalaryStatus, TransactionType, SalaryMonthType, PaymentMethod } = require("../lib/prisma");
+const { SalaryStatus, TransactionType, SalaryMonthType, PaymentMethod } = require("../generated/prisma");
 const ExcelJS = require("exceljs");
 const prisma = require("../lib/prisma");
 const { toMinor, fromMinorUnits } = require("../utils/amount");

@@ -1,4 +1,4 @@
-const { InvoiceStatus, EntryType, EntryColor } = require("../lib/prisma");
+const { InvoiceStatus, EntryType, EntryColor } = require("../generated/prisma");
 const ExcelJS = require("exceljs");
 const prisma = require("../lib/prisma");
 const AppError = require("../utils/AppError");
@@ -6,6 +6,7 @@ const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
 const getWeekRange = require("../utils/getWeekRange");
 const { deleteFilesFromS3 } = require("../utils/s3");
+const storage = require("../lib/storage");
 
 const allowedColumnKeys = ["date", "amount", "contractAmount"];
 
@@ -1131,7 +1132,7 @@ const branchController = {
         }
       }
 
-      if (attachments.length) await deleteFilesFromS3(attachments);
+      if (attachments.length) await storage.deleteMany(attachments);
 
       res.status(200).json({
         status: "success",

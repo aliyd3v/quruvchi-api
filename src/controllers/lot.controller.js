@@ -4,9 +4,9 @@ const { fromMinorUnits } = require("../utils/amount");
 const AppError = require("../utils/AppError");
 const { idChecker } = require("../utils/idChecker");
 const { localErrorHandler } = require("../utils/localErrorHandler");
-const { LotStatus } = require("../lib/prisma");
+const { LotStatus } = require("../generated/prisma");
 const fileService = require("../services/file.service");
-const { deleteFilesFromS3 } = require("../utils/s3");
+const storage = require("../lib/storage");
 
 async function getFromTenderMcUz(id = "", page = 1, limit = 1, sortBy = "desc", orderBy = "confirmed_date") {
   try {
@@ -1231,7 +1231,7 @@ const lotController = {
         }
       }
 
-      if (attachments.length) await deleteFilesFromS3(attachments);
+      if (attachments.length) await storage.deleteMany(attachments);
 
       res.status(200).json({
         status: "success",

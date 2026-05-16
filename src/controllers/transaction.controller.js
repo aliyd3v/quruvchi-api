@@ -8,7 +8,7 @@ const { fromMinorUnits } = require("../utils/amount");
 const txnService = require("../services/txn.service");
 const getWeekRange = require("../utils/getWeekRange");
 const fileService = require("../services/file.service");
-const { deleteFilesFromS3 } = require("../utils/s3");
+const storage = require("../lib/storage");
 
 const allowedColumnKeys = ["purpose", "type", "notes", "amount", "object", "date", "createdAt", "updatedAt"];
 
@@ -1526,7 +1526,7 @@ const transactionController = {
         where: { id },
       });
       if (txn.attachments.length) {
-        await deleteFilesFromS3(txn.attachments.map((f) => f.filename));
+        await storage.deleteMany(txn.attachments.map((f) => f.filename));
       }
 
       res.status(200).json({
