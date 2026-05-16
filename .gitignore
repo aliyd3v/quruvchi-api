@@ -3,3 +3,4 @@ node_modules
 uploads
 src/utils/uploads
 /src/generated/prisma
+storage

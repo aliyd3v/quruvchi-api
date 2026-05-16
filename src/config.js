@@ -1,6 +1,8 @@
 require("dotenv").config();
 
 const Config = {
+  NODE_ENV: process.env.NODE_ENV || "development",
+  APP_URL: process.env.APP_URL || "http://localhost:3000",
   PORT: process.env.PORT || 3000,
   DATABASE_URL: process.env.DATABASE_URL,
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY || "Secret",

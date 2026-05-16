@@ -1,8 +1,8 @@
 const { Unit } = require("../generated/prisma");
 const AppError = require("../utils/AppError");
-const { deleteFilesFromS3, uploadFileToS3, deleteFileFromS3 } = require("../utils/s3");
 const prisma = require("../lib/prisma");
 const fileService = require("./file.service");
+const storage = require("../lib/storage");
 
 class catalogService {
   async createDirection({ data, createdById, file } = {}) {
@@ -10,7 +10,7 @@ class catalogService {
 
     if (file) {
       try {
-        uploaded = await uploadFileToS3(file);
+        uploaded = await storage.save(file);
       } catch (error) {
         await fileService.unlinkFiles(file);
         throw error;
@@ -43,7 +43,7 @@ class catalogService {
       });
     } catch (error) {
       if (uploaded) {
-        await deleteFileFromS3(uploaded.filename);
+        await storage.delete(uploaded.filename);
       }
       throw error;
     }
@@ -224,7 +224,7 @@ class catalogService {
 
     if (file) {
       try {
-        uploaded = await uploadFileToS3(file);
+        uploaded = await storage.save(file);
       } catch (error) {
         await fileService.unlinkFiles(file);
         throw error;
@@ -275,13 +275,13 @@ class catalogService {
       });
     } catch (error) {
       if (uploaded) {
-        await deleteFileFromS3(uploaded.filename);
+        await storage.delete(uploaded.filename);
       }
       throw error;
     }
 
     if (filesForRemove.length) {
-      await deleteFilesFromS3(filesForRemove);
+      await storage.deleteMany(filesForRemove);
     }
 
     return;
@@ -438,7 +438,7 @@ class catalogService {
       }
 
       if (filenames.length) {
-        await deleteFilesFromS3(filenames);
+        await storage.deleteMany(filenames);
       }
 
       return;
@@ -453,7 +453,7 @@ class catalogService {
 
     if (file) {
       try {
-        uploaded = await uploadFileToS3(file);
+        uploaded = await storage.save(file);
       } catch (error) {
         await fileService.unlinkFiles(file);
         await fileService.unlinkFiles(files);
@@ -464,16 +464,16 @@ class catalogService {
     if (Array.isArray(files) && files.length > 0) {
       try {
         for (const file of files) {
-          const uploaded = await uploadFileToS3(file);
+          const uploaded = await storage.save(file);
           uploadedFiles.push(uploaded);
         }
       } catch (error) {
         await fileService.unlinkFiles(files);
         if (uploaded) {
-          await deleteFileFromS3(uploaded.filename);
+          await storage.delete(uploaded.filename);
         }
         if (uploadedFiles.length > 0) {
-          await deleteFilesFromS3(uploadedFiles.map((f) => f.filename));
+          await storage.deleteMany(uploadedFiles.map((f) => f.filename));
         }
         throw error;
       }
@@ -574,10 +574,10 @@ class catalogService {
       });
     } catch (error) {
       if (uploaded) {
-        await deleteFileFromS3(uploaded.filename);
+        await storage.delete(uploaded.filename);
       }
       if (uploadedFiles.length > 0) {
-        await deleteFileFromS3(uploadedFiles.map((f) => f.filename));
+        await storage.delete(uploadedFiles.map((f) => f.filename));
       }
       throw error;
     }
@@ -877,7 +877,7 @@ class catalogService {
 
     if (file) {
       try {
-        uploadedFile = await uploadFileToS3(file);
+        uploadedFile = await storage.save(file);
       } catch (error) {
         await fileService.unlinkFiles(file);
         await fileService.unlinkFiles(files);
@@ -888,16 +888,16 @@ class catalogService {
     if (Array.isArray(files) && files.length > 0) {
       try {
         for (const file of files) {
-          const uploaded = await uploadFileToS3(file);
+          const uploaded = await storage.save(file);
           uploadedFiles.push(uploaded);
         }
       } catch (error) {
         await fileService.unlinkFiles(files);
         if (uploadedFile) {
-          await deleteFileFromS3(uploadedFile.filename);
+          await storage.delete(uploadedFile.filename);
         }
         if (uploadedFiles.length > 0) {
-          await deleteFilesFromS3(uploadedFiles.map((f) => f.filename));
+          await storage.deleteMany(uploadedFiles.map((f) => f.filename));
         }
         throw error;
       }
@@ -959,16 +959,16 @@ class catalogService {
       });
     } catch (error) {
       if (uploadedFile) {
-        await deleteFileFromS3(uploadedFile.filename);
+        await storage.delete(uploadedFile.filename);
       }
       if (uploadedFiles.length) {
-        await deleteFilesFromS3(uploadedFiles.map((f) => f.filename));
+        await storage.deleteMany(uploadedFiles.map((f) => f.filename));
       }
       throw error;
     }
 
     if (prevImagesForDelete.length) {
-      await deleteFilesFromS3(prevImagesForDelete.map((f) => f.filename));
+      await storage.deleteMany(prevImagesForDelete.map((f) => f.filename));
     }
 
     return;
@@ -1032,7 +1032,7 @@ class catalogService {
 
       if (catalog.attachments.length) {
         const filenames = catalog.attachments.map((a) => a.filename);
-        await deleteFilesFromS3(filenames);
+        await storage.deleteMany(filenames);
       }
 
       return;
@@ -1961,7 +1961,7 @@ class catalogService {
         where: { id },
       });
 
-      await deleteFileFromS3(gallery.filename);
+      await storage.delete(gallery.filename);
 
       return;
     } catch (error) {

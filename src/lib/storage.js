@@ -1,15 +1,29 @@
-class Storage {
-  async clear(data) {
-    try {
-      return;
-    } catch (error) {
-      throw error;
-    }
-  }
+const fs = require("fs/promises");
+const { imageConverter } = require("../utils/imageConverter");
+const { APP_URL } = require("../config");
+const path = require("path");
 
+class Storage {
   async save(file) {
     try {
-      return;
+      await imageConverter(file);
+
+      const oldPath = path.join(__dirname, "..", "..", "uploaded", file.filename);
+      const newPath = path.join(__dirname, "..", "..", "storage", file.filename);
+
+      await fs.rename(oldPath, newPath);
+
+      const url = APP_URL + "/file/" + file.filename;
+
+      const result = {
+        originalname: file.originalname,
+        filename: file.filename,
+        filesize: file.size,
+        mimeType: file.mimetype,
+        url,
+      };
+
+      return result;
     } catch (error) {
       throw error;
     }
@@ -17,15 +31,16 @@ class Storage {
 
   async saveMany(files) {
     try {
-      return;
+      return await Promise.all(files.map((f) => this.save(f)));
     } catch (error) {
       throw error;
     }
   }
 
-  async get(filename) {
+  async getFile(key) {
     try {
-      return;
+      const filepath = path.join(__dirname, "..", "..", "storage", key);
+      return await s3.send(command);
     } catch (error) {
       throw error;
     }
@@ -33,15 +48,18 @@ class Storage {
 
   async delete(filename) {
     try {
+      const p = path.join(__dirname, "..", "..", "storage", filename);
+      await fs.unlink(p);
+
       return;
     } catch (error) {
-      throw error;
+      console.log(error);
     }
   }
 
   async deleteMany(filenames) {
     try {
-      return;
+      return await Promise.all(filenames.map((filename) => this.delete(filename)));
     } catch (error) {
       throw error;
     }

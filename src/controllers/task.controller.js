@@ -8,7 +8,7 @@ const fileService = require("../services/file.service");
 const sleep = require("../utils/sleep");
 const { fromMinorUnits } = require("../utils/amount");
 const callService = require("../services/call.service");
-const { deleteFilesFromS3, uploadFilesToS3 } = require("../utils/s3");
+const storage = require("../lib/storage");
 
 const getUnitUz = (unit) => {
   const units = {
@@ -464,7 +464,7 @@ const taskController = {
         });
 
         if (Array.isArray(files) && files.length) {
-          const uploaded = await uploadFilesToS3(req.files);
+          const uploaded = await storage.deleteMany(req.files);
 
           if (uploaded.length) {
             const attachmentData = uploaded.map((u) => ({
@@ -2572,7 +2572,7 @@ const taskController = {
         where: { id },
       });
       if (task.attachments.length) {
-        await deleteFilesFromS3(task.attachments.map((f) => f.filename));
+        await storage.deleteMany(task.attachments.map((f) => f.filename));
       }
 
       res.status(200).json({

@@ -1,12 +1,12 @@
 const { InventoryHistoryType, Unit } = require("../lib/prisma");
 const AppError = require("../utils/AppError");
-const { uploadFilesToS3, deleteFilesFromS3 } = require("../utils/s3");
 const ExcelJS = require("exceljs");
 const prisma = require("../lib/prisma");
 const { idChecker } = require("../utils/idChecker");
 const sleep = require("../utils/sleep");
 const { fromMinorUnits } = require("../utils/amount");
 const getWeekRange = require("../utils/getWeekRange");
+const storage = require("../lib/storage");
 
 const allowedColumnKeys = ["name", "createdAt", "totalPrice", "pricePerUnit", "updatedAt"];
 
@@ -37,7 +37,7 @@ class inventoryService {
       });
 
       if (files && Array.isArray(files) && files.length) {
-        const uploadedFiles = await uploadFilesToS3(files);
+        const uploadedFiles = await storage.saveMany(files);
         if (uploadedFiles.length) {
           await prisma.attachment.createMany({
             data: uploadedFiles.map((u) => {
@@ -1031,7 +1031,7 @@ class inventoryService {
       }
 
       if (attachments.length) {
-        await deleteFilesFromS3(attachments);
+        await storage.deleteMany(attachments);
       }
 
       return;
@@ -1107,7 +1107,7 @@ class inventoryService {
         await this._recalcInventory(tx, inventoryId);
 
         if (files && Array.isArray(files) && files.length) {
-          const uploadedFiles = await uploadFilesToS3(files);
+          const uploadedFiles = await storage.saveMany(files);
 
           if (uploadedFiles.length) {
             await tx.attachment.createMany({
@@ -1436,7 +1436,7 @@ class inventoryService {
         }
       }
       if (attachments.length) {
-        await deleteFilesFromS3(attachments);
+        await storage.deleteMany(attachments);
       }
 
       return;

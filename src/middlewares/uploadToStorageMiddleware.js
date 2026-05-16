@@ -1,12 +1,13 @@
+const storage = require("../lib/storage");
+const fileService = require("../services/file.service");
 const { localErrorHandler } = require("../utils/localErrorHandler");
-const { uploadFileToS3, cleanupLocalFiles, uploadFilesToS3 } = require("../utils/s3");
 
 exports.uploadSingleFile = async (req, _res, next) => {
   try {
-    if (req.file) req.uploadedFile = await uploadFileToS3(req.file);
+    if (req.file) req.uploadedFile = await storage.save(req.file);
     next();
   } catch (error) {
-    await cleanupLocalFiles(req.file);
+    await fileService.unlinkFiles(req.file);
     next(localErrorHandler(error));
   }
 };
@@ -14,11 +15,11 @@ exports.uploadSingleFile = async (req, _res, next) => {
 exports.uploadMultipleFiles = async (req, _res, next) => {
   try {
     if (req.files && Array.isArray(req.files) && req.files?.length > 0) {
-      req.uploadedFiles = await uploadFilesToS3(req.files);
+      req.uploadedFiles = await storage.saveMany(req.files);
     }
     next();
   } catch (error) {
-    await cleanupLocalFiles(req.files);
+    await fileService.unlinkFiles(req.files);
     next(localErrorHandler(error));
   }
 };
@@ -27,15 +28,15 @@ exports.uploadMultipleFields = async (req, _res, next) => {
   try {
     if (req.files && (req.files.invoiceFiles || req.files.bankAcceptanceFiles)) {
       if (req.files.invoiceFiles?.length) {
-        req.uploadedInvoiceFiles = await uploadFilesToS3(req.files.invoiceFiles);
+        req.uploadedInvoiceFiles = await storage.saveMany(req.files.invoiceFiles);
       }
       if (req.files.bankAcceptanceFiles?.length) {
-        req.uploadedBankAcceptanceFiles = await uploadFilesToS3(req.files.bankAcceptanceFiles);
+        req.uploadedBankAcceptanceFiles = await storage.saveMany(req.files.bankAcceptanceFiles);
       }
     }
     next();
   } catch (error) {
-    await cleanupLocalFiles(req.files);
+    await fileService.unlinkFiles(req.files);
     next(localErrorHandler(error));
   }
 };
