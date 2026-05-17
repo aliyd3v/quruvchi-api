@@ -26,7 +26,7 @@ async function cronJobs() {
     "0 0 */1 * *",
     async () => {
       try {
-        await cronService.sendBackupDBToTgChannel();
+        // await cronService.sendBackupDBToTgChannel();
       } catch (error) {
         console.log("ERROR ON BAKCUP DATABSE", error);
       }
@@ -122,14 +122,6 @@ async function cronJobs() {
     "30 9 */1 * *",
     async () => {
       await cronService.callForNewTask();
-    },
-    { timezone },
-  );
-
-  cron.schedule(
-    "15 9 */1 * *",
-    async () => {
-      await cronService.callForNewInbox();
     },
     { timezone },
   );
